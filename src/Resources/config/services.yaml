@@ -1,0 +1,30 @@
+services:
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Command\TestCommand:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Controller\:
+    resource: '../../Controller'
+    autoconfigure: true
+    autowire: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DataPersister\:
+    resource: '../../DataPersister'
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DataProvider\:
+    resource: '../../DataProvider'
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\ExternalApi:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\MyCustomService:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\RemovemeProviderInterface:
+    '@Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\ExternalApi'
