@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection;
 
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -13,27 +14,19 @@ class DbpRelayBaseOrganizationConnectorCampusonlineExtension extends Configurabl
 {
     public function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
-        $this->extendArrayParameter(
-            $container, 'api_platform.resource_class_directories', [__DIR__.'/../Entity']);
-
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../Resources/config')
         );
         $loader->load('services.yaml');
 
-        // Inject the config value into the MyCustomService service
-        $definition = $container->getDefinition('Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\MyCustomService');
-        $definition->addArgument($mergedConfig['example_config']);
-    }
+        $courseCache = $container->register('dbp_api.cache.organization.campus_online', FilesystemAdapter::class);
+        $courseCache->setArguments(['relay-base-organization-connector-campusonline', 60, '%kernel.cache_dir%/dbp/relay-base-organization-connector-campusonline']);
+        $courseCache->setPublic(true);
+        $courseCache->addTag('cache.pool');
 
-    private function extendArrayParameter(ContainerBuilder $container, string $parameter, array $values)
-    {
-        if (!$container->hasParameter($parameter)) {
-            $container->setParameter($parameter, []);
-        }
-        $oldValues = $container->getParameter($parameter);
-        assert(is_array($oldValues));
-        $container->setParameter($parameter, array_merge($oldValues, $values));
+        $courseApi = $container->getDefinition('Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi');
+        $courseApi->addMethodCall('setCache', [$courseCache, 3600]);
+        $courseApi->addMethodCall('setConfig', [$mergedConfig['campus_online'] ?? []]);
     }
 }
