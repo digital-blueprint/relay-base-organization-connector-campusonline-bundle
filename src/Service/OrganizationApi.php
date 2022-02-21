@@ -108,7 +108,6 @@ class OrganizationApi implements LoggerAwareInterface
         $organization = new Organization();
         $organization->setIdentifier($orgUnit->getIdentifier());
         $organization->setName($orgUnit->getName());
-        $organization->setAlternateName('F'.$orgUnit->getCode());
         $organization->setUrl($orgUnit->getUrl());
         $organization->setCode($orgUnit->getCode());
 
