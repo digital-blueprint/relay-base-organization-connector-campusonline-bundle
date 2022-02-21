@@ -7,7 +7,7 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
-use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\Organization;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -66,6 +66,9 @@ class OrganizationApi implements LoggerAwareInterface
         $this->getApi()->OrganizationUnit()->getOrganizationUnits();
     }
 
+    /**
+     * @throws ApiException
+     */
     public function getOrganizationById(string $identifier, array $options = []): ?Organization
     {
         $orgUnitData = $this->getApi()->OrganizationUnit()->getOrganizationUnitById($identifier, $options);
@@ -73,6 +76,9 @@ class OrganizationApi implements LoggerAwareInterface
         return $orgUnitData ? self::toOrganization($orgUnitData) : null;
     }
 
+    /**
+     * @throws ApiException
+     */
     public function getOrganizations(array $options = []): array
     {
         $orgs = [];
@@ -102,8 +108,9 @@ class OrganizationApi implements LoggerAwareInterface
         $organization = new Organization();
         $organization->setIdentifier($orgUnit->getIdentifier());
         $organization->setName($orgUnit->getName());
-        $organization->setAlternateName($orgUnit->getCode());
+        $organization->setAlternateName('F'.$orgUnit->getCode());
         $organization->setUrl($orgUnit->getUrl());
+        $organization->setCode($orgUnit->getCode());
 
         return $organization;
     }
