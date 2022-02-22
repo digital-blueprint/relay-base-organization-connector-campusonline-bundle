@@ -14,12 +14,13 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('dbp_relay_base_organization_connector_campusonline');
         $treeBuilder->getRootNode()
             ->children()
-            ->arrayNode('campus_online')
-            ->children()
-            ->scalarNode('api_url')->end()
-            ->scalarNode('api_token')->end()
-            ->scalarNode('org_root_id')->end()
-            ->end()
+                ->arrayNode('campus_online')
+                    ->children()
+                        ->scalarNode('api_url')->end()
+                        ->scalarNode('api_token')->end()
+                        ->scalarNode('org_root_id')->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
