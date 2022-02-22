@@ -20,13 +20,13 @@ class DbpRelayBaseOrganizationConnectorCampusonlineExtension extends Configurabl
         );
         $loader->load('services.yaml');
 
-        $courseCache = $container->register('dbp_api.cache.organization.campus_online', FilesystemAdapter::class);
-        $courseCache->setArguments(['relay-base-organization-connector-campusonline', 60, '%kernel.cache_dir%/dbp/relay-base-organization-connector-campusonline']);
-        $courseCache->setPublic(true);
-        $courseCache->addTag('cache.pool');
+        $organizationCache = $container->register('dbp_api.cache.organization.campus_online', FilesystemAdapter::class);
+        $organizationCache->setArguments(['relay-base-organization-connector-campusonline', 60, '%kernel.cache_dir%/dbp/relay-base-organization-connector-campusonline']);
+        $organizationCache->setPublic(true);
+        $organizationCache->addTag('cache.pool');
 
         $courseApi = $container->getDefinition('Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi');
-        $courseApi->addMethodCall('setCache', [$courseCache, 3600]);
+        $courseApi->addMethodCall('setCache', [$organizationCache, 3600]);
         $courseApi->addMethodCall('setConfig', [$mergedConfig['campus_online'] ?? []]);
     }
 }

@@ -110,6 +110,7 @@ class OrganizationApi implements LoggerAwareInterface
         $organization->setName($orgUnit->getName());
         $organization->setUrl($orgUnit->getUrl());
         $organization->setCode($orgUnit->getCode());
+        $organization->setType($orgUnit->getType());
 
         return $organization;
     }

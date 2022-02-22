@@ -10,6 +10,8 @@ class Organization extends BaseOrganization
 {
     private $code;
 
+    private $type;
+
     public function getCode(): string
     {
         return $this->code;
@@ -18,5 +20,15 @@ class Organization extends BaseOrganization
     public function setCode(string $code): void
     {
         $this->code = $code;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType($type): void
+    {
+        $this->type = $type;
     }
 }

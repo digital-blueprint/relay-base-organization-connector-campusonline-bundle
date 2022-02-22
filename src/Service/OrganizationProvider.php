@@ -11,10 +11,6 @@ use Dbp\Relay\CoreBundle\Exception\ApiError;
 
 class OrganizationProvider implements OrganizationProviderInterface
 {
-    private const HTTP_STATUS_NOT_FOUND = 404;
-    private const LANGUAGE_OPTION_NAME = 'lang';
-    private const DEFAULT_LANGUAGE = 'de';
-
     /*
      * @var OrganizationApi
      */
@@ -26,20 +22,14 @@ class OrganizationProvider implements OrganizationProviderInterface
     }
 
     /**
-     * TODO: change return type to ?Organization. Kept Organization because of ALMA code depending on non-null return type.
-     *
      * @throws ApiError
      */
-    public function getOrganizationById(string $identifier, string $lang): Organization
+    public function getOrganizationById(string $identifier, array $options = []): ?Organization
     {
         try {
-            $org = $this->orgApi->getOrganizationById($identifier, self::makeOptions($lang));
+            $org = $this->orgApi->getOrganizationById($identifier, $options);
         } catch (\Exception $e) {
             throw new ApiError($e->getCode(), $e->getMessage());
-        }
-
-        if ($org === null) {
-            throw new ApiError(self::HTTP_STATUS_NOT_FOUND, 'orgainization unit with ID '.$identifier.' not found');
         }
 
         return $org;
@@ -52,7 +42,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      *
      * @throws ApiError
      */
-    public function getOrganizationsByPerson(Person $person, string $context, string $lang): array
+    public function getOrganizationsByPerson(Person $person, string $context, array $options = []): array
     {
         return [];
     }
@@ -62,17 +52,12 @@ class OrganizationProvider implements OrganizationProviderInterface
      *
      * @throws ApiError
      */
-    public function getOrganizations(string $lang): array
+    public function getOrganizations(array $options = []): array
     {
         try {
-            return $this->orgApi->getOrganizations(self::makeOptions($lang));
+            return $this->orgApi->getOrganizations($options);
         } catch (\Exception $e) {
             throw new ApiError($e->getCode(), $e->getMessage());
         }
-    }
-
-    private static function makeOptions(string $lang): array
-    {
-        return [self::LANGUAGE_OPTION_NAME => ($lang !== '' ? $lang : self::DEFAULT_LANGUAGE)];
     }
 }
