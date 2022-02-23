@@ -209,8 +209,14 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
+                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
                 "reference": "b8347564ede01cbe2d161f8aa0fd21449234f601"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=b8347564ede01cbe2d161f8aa0fd21449234f601",
+                "reference": "b8347564ede01cbe2d161f8aa0fd21449234f601",
+                "shasum": ""
             },
             "require": {
                 "api-platform/core": "^2.6.3",
@@ -282,7 +288,11 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-02-22T09:47:59+00:00"
+            "support": {
+                "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/main",
+                "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
+            },
+            "time": "2022-02-22T10:47:59+01:00"
         },
         {
             "name": "dbp/relay-base-person-bundle",
@@ -913,12 +923,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "GuzzleHttp\\Promise\\": "src/"
-                },
                 "files": [
                     "src/functions_include.php"
-                ]
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
