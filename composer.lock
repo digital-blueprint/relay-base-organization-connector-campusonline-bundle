@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8424bf052e64db7c77cba8ea7bc8f66e",
+    "content-hash": "acfa9c19ceaa33051c2e8be395540356",
     "packages": [
         {
             "name": "api-platform/core",
@@ -210,18 +210,12 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
-                "reference": "5091d10629a982100440d741340d9a0e614ab2a2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=5091d10629a982100440d741340d9a0e614ab2a2",
-                "reference": "5091d10629a982100440d741340d9a0e614ab2a2",
-                "shasum": ""
+                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
+                "reference": "c10cce6d03f840197909bec288063db3bfad173a"
             },
             "require": {
                 "api-platform/core": "^2.6.3",
-                "dbp/relay-base-person-bundle": "^0.1.3",
+                "dbp/relay-base-person-bundle": "^0.2.0",
                 "dbp/relay-core-bundle": "^0.1.25",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0",
@@ -289,19 +283,15 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "support": {
-                "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/main",
-                "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
-            },
-            "time": "2022-03-21T01:21:19+01:00"
+            "time": "2022-03-23T09:51:43+00:00"
         },
         {
             "name": "dbp/relay-base-person-bundle",
-            "version": "v0.1.6",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-person-bundle",
-                "reference": "aaae7b2cb9e6fbb22c116b777fde800312ad10ea"
+                "reference": "9793a5e69a4a4b4ae76f0eacc1510ad33e5ec1a3"
             },
             "require": {
                 "api-platform/core": "^2.6.3",
@@ -342,7 +332,7 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-02-02T15:46:45+00:00"
+            "time": "2022-03-17T14:27:32+00:00"
         },
         {
             "name": "dbp/relay-core-bundle",
@@ -10446,5 +10436,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
