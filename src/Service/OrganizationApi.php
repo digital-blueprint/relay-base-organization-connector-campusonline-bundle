@@ -7,7 +7,7 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\Organization;
+use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -108,9 +108,6 @@ class OrganizationApi implements LoggerAwareInterface
         $organization = new Organization();
         $organization->setIdentifier($orgUnit->getIdentifier());
         $organization->setName($orgUnit->getName());
-        $organization->setUrl($orgUnit->getUrl());
-        $organization->setCode($orgUnit->getCode());
-        $organization->setType($orgUnit->getType());
 
         return $organization;
     }

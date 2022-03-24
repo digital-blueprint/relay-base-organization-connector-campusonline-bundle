@@ -37,8 +37,6 @@ class OrganizationTest extends ApiTestCase
         $org = $this->api->getOrganizationById('2322');
         $this->assertSame('2322', $org->getIdentifier());
         $this->assertSame('Institute of Fundamentals and Theory in Electrical  Engineering', $org->getName());
-        $this->assertSame('4370', $org->getCode());
-        $this->assertSame('https://online.tugraz.at/tug_online/wborg.display?pOrgNr=2322', $org->getUrl());
     }
 
     public function testGetOrganizationByIdNoPermission()
@@ -58,10 +56,7 @@ class OrganizationTest extends ApiTestCase
         $result = $this->api->getOrganizations();
         $this->assertCount(3, $result);
         $this->assertSame('2391', $result[0]->getIdentifier());
-        $this->assertSame('6350', $result[0]->getCode());
         $this->assertSame('18454', $result[1]->getIdentifier());
-        $this->assertSame('6352', $result[1]->getCode());
         $this->assertSame('18452', $result[2]->getIdentifier());
-        $this->assertSame('6351', $result[2]->getCode());
     }
 }
