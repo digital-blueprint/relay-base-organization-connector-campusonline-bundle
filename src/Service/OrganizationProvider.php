@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
+use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationProviderPostEvent;
 use Dbp\Relay\BasePersonBundle\Entity\Person;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationProvider implements OrganizationProviderInterface
@@ -18,9 +21,13 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     private $orgApi;
 
-    public function __construct(OrganizationApi $orgApi)
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
+    public function __construct(OrganizationApi $orgApi, EventDispatcherInterface $eventDispatcher)
     {
         $this->orgApi = $orgApi;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -28,15 +35,16 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizationById(string $identifier, array $options = []): ?Organization
     {
-        $org = null;
+        $organizationUnitData = null;
 
         try {
-            $org = $this->orgApi->getOrganizationById($identifier, $options);
+            $organizationUnitData = $this->orgApi->getOrganizationById($identifier, $options);
         } catch (ApiException $e) {
             self::dispatchException($e, $identifier);
         }
 
-        return $org;
+        return $organizationUnitData ?
+            self::createOrganizationFromOrganizationUnitData($organizationUnitData, self::checkIncludeLocalData($options)) : null;
     }
 
     /**
@@ -48,7 +56,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizationsByPerson(Person $person, string $context, array $options = []): array
     {
-        throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, 'query not available');
+        throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, 'query not supported');
     }
 
     /**
@@ -58,11 +66,37 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizations(array $options = []): array
     {
+        $organizations = [];
         try {
-            return $this->orgApi->getOrganizations($options);
+            foreach ($this->orgApi->getOrganizations($options) as $organizationUnitData) {
+                $organizations[] = self::createOrganizationFromOrganizationUnitData(
+                    $organizationUnitData, self::checkIncludeLocalData($options));
+            }
         } catch (ApiException $e) {
             throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
+
+        return $organizations;
+    }
+
+    private function createOrganizationFromOrganizationUnitData(OrganizationUnitData $organizationUnitData, bool $includeLocalData): Organization
+    {
+        $organization = new Organization();
+        $organization->setIdentifier($organizationUnitData->getIdentifier());
+        $organization->setName($organizationUnitData->getName());
+
+        if ($includeLocalData) {
+            $postEvent = new OrganizationProviderPostEvent($organization, $organizationUnitData);
+            $this->eventDispatcher->dispatch($postEvent, OrganizationProviderPostEvent::NAME);
+            $organization = $postEvent->getOrganization();
+        }
+
+        return $organization;
+    }
+
+    private static function checkIncludeLocalData(array $options): bool
+    {
+        return ($options['includeLocalData'] ?? false) === true;
     }
 
     /**

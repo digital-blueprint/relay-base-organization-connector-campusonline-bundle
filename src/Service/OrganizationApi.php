@@ -7,7 +7,6 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
-use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -69,24 +68,19 @@ class OrganizationApi implements LoggerAwareInterface
     /**
      * @throws ApiException
      */
-    public function getOrganizationById(string $identifier, array $options = []): ?Organization
+    public function getOrganizationById(string $identifier, array $options = []): ?OrganizationUnitData
     {
-        $orgUnitData = $this->getApi()->OrganizationUnit()->getOrganizationUnitById($identifier, $options);
-
-        return $orgUnitData ? self::toOrganization($orgUnitData) : null;
+        return $this->getApi()->OrganizationUnit()->getOrganizationUnitById($identifier, $options);
     }
 
     /**
      * @throws ApiException
+     *
+     * @retrun OrganizationUnitData[]
      */
     public function getOrganizations(array $options = []): array
     {
-        $orgs = [];
-        foreach ($this->getApi()->OrganizationUnit()->getOrganizationUnits($options) as $orgUnit) {
-            $orgs[] = self::toOrganization($orgUnit);
-        }
-
-        return $orgs;
+        return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options);
     }
 
     private function getApi(): Api
@@ -101,14 +95,5 @@ class OrganizationApi implements LoggerAwareInterface
         }
 
         return $this->api;
-    }
-
-    private static function toOrganization(OrganizationUnitData $orgUnit): Organization
-    {
-        $organization = new Organization();
-        $organization->setIdentifier($orgUnit->getIdentifier());
-        $organization->setName($orgUnit->getName());
-
-        return $organization;
     }
 }
