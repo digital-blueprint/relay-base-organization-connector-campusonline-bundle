@@ -173,7 +173,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/campus-online/dbp-campusonline-api",
-                "reference": "7e1e0f10a3988076f06e036e107c26d278dbd2e2"
+                "reference": "c6aaa7be188bc4c4531889270e96fe0e807560e0"
             },
             "require": {
                 "ext-json": "*",
@@ -203,7 +203,7 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-04-03T14:41:31+00:00"
+            "time": "2022-04-04T00:13:51+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -211,12 +211,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
-                "reference": "30cbc8cccde5c85161ac8011a8b0ac48c92cd758"
+                "reference": "073e0afd9cd97857df2e913404c2b286cbbfdc67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=30cbc8cccde5c85161ac8011a8b0ac48c92cd758",
-                "reference": "30cbc8cccde5c85161ac8011a8b0ac48c92cd758",
+                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=073e0afd9cd97857df2e913404c2b286cbbfdc67",
+                "reference": "073e0afd9cd97857df2e913404c2b286cbbfdc67",
                 "shasum": ""
             },
             "require": {
@@ -293,7 +293,7 @@
                 "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/main",
                 "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
             },
-            "time": "2022-04-03T16:43:33+02:00"
+            "time": "2022-04-04T02:15:35+02:00"
         },
         {
             "name": "dbp/relay-base-person-bundle",
