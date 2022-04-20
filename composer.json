@@ -9,7 +9,7 @@
         "api-platform/core": "^2.6",
         "dbp/campusonline-api": "dev-main as 0.2.2",
         "dbp/relay-base-organization-bundle": "dev-main",
-        "dbp/relay-core-bundle": "^0.1.11",
+        "dbp/relay-core-bundle": "dev-main as 0.1.32",
         "symfony/framework-bundle": "^5.4"
     },
     "require-dev": {

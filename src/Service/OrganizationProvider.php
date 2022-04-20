@@ -8,25 +8,24 @@ use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationProviderPostEvent;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationProvider implements OrganizationProviderInterface
 {
-    /*
-     * @var OrganizationApi
-     */
+    /** @var OrganizationApi */
     private $orgApi;
 
-    /** @var EventDispatcherInterface */
+    /** @var LocalDataAwareEventDispatcher */
     private $eventDispatcher;
 
     public function __construct(OrganizationApi $orgApi, EventDispatcherInterface $eventDispatcher)
     {
         $this->orgApi = $orgApi;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->eventDispatcher = new LocalDataAwareEventDispatcher(Organization::class, $eventDispatcher);
     }
 
     /**
@@ -34,6 +33,8 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizationById(string $identifier, array $options = []): ?Organization
     {
+        $this->eventDispatcher->initRequestedLocalDataAttributes($options['include'] ?? '');
+
         $organizationUnitData = null;
 
         try {
@@ -43,7 +44,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         }
 
         return $organizationUnitData ?
-            self::createOrganizationFromOrganizationUnitData($organizationUnitData, self::checkIncludeLocalData($options)) : null;
+            self::createOrganizationFromOrganizationUnitData($organizationUnitData) : null;
     }
 
     /**
@@ -53,11 +54,12 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizations(array $options = []): array
     {
+        $this->eventDispatcher->initRequestedLocalDataAttributes($options['include'] ?? '');
+
         $organizations = [];
         try {
             foreach ($this->orgApi->getOrganizations($options) as $organizationUnitData) {
-                $organizations[] = self::createOrganizationFromOrganizationUnitData(
-                    $organizationUnitData, self::checkIncludeLocalData($options));
+                $organizations[] = self::createOrganizationFromOrganizationUnitData($organizationUnitData);
             }
         } catch (ApiException $e) {
             throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
@@ -66,24 +68,16 @@ class OrganizationProvider implements OrganizationProviderInterface
         return $organizations;
     }
 
-    private function createOrganizationFromOrganizationUnitData(OrganizationUnitData $organizationUnitData, bool $includeLocalData): Organization
+    private function createOrganizationFromOrganizationUnitData(OrganizationUnitData $organizationUnitData): Organization
     {
         $organization = new Organization();
         $organization->setIdentifier($organizationUnitData->getIdentifier());
         $organization->setName($organizationUnitData->getName());
 
-        if ($includeLocalData) {
-            $postEvent = new OrganizationProviderPostEvent($organization, $organizationUnitData);
-            $this->eventDispatcher->dispatch($postEvent, OrganizationProviderPostEvent::NAME);
-            $organization = $postEvent->getOrganization();
-        }
+        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData);
+        $this->eventDispatcher->dispatch($postEvent, OrganizationPostEvent::NAME);
 
-        return $organization;
-    }
-
-    private static function checkIncludeLocalData(array $options): bool
-    {
-        return ($options['includeLocalData'] ?? false) === true;
+        return $postEvent->getOrganization();
     }
 
     /**

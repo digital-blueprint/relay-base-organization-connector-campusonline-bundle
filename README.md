@@ -53,7 +53,7 @@ For example, create an event subscriber `src/EventSubscriber/OrganizationProvide
 <?php
 namespace App\EventSubscriber;
 
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationProviderPostEvent;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class OrganizationProviderSubscriber implements EventSubscriberInterface
@@ -61,11 +61,11 @@ class OrganizationProviderSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            OrganizationProviderPostEvent::NAME => 'onPost',
+            OrganizationPostEvent::NAME => 'onPost',
     ];
     }
 
-    public function onPost(OrganizationProviderPostEvent $event)
+    public function onPost(OrganizationPostEvent $event)
     {
         $organization = $event->getOrganization();
         $organizationData = $event->getOrganizationUnitData();
