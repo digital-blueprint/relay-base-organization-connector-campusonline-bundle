@@ -9,7 +9,6 @@ use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationProviderPostEvent;
-use Dbp\Relay\BasePersonBundle\Entity\Person;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,18 +44,6 @@ class OrganizationProvider implements OrganizationProviderInterface
 
         return $organizationUnitData ?
             self::createOrganizationFromOrganizationUnitData($organizationUnitData, self::checkIncludeLocalData($options)) : null;
-    }
-
-    /**
-     * currently not supported by the Campusonline API.
-     *
-     * @return Organization[]
-     *
-     * @throws ApiError
-     */
-    public function getOrganizationsByPerson(Person $person, string $context, array $options = []): array
-    {
-        throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, 'query not supported');
     }
 
     /**
