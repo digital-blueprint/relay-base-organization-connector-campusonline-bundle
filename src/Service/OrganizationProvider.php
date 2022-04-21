@@ -77,7 +77,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         $postEvent = new OrganizationPostEvent($organization, $organizationUnitData);
         $this->eventDispatcher->dispatch($postEvent, OrganizationPostEvent::NAME);
 
-        return $postEvent->getOrganization();
+        return $postEvent->getEntity();
     }
 
     /**

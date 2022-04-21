@@ -12,21 +12,26 @@ class OrganizationPostEvent extends LocalDataAwareEvent
 {
     public const NAME = 'dbp.relay.relay_base_organization_connector_campusonline.organization_provider.post';
 
-    private $organization;
+    /** @var OrganizationUnitData */
     private $organizationUnitData;
+
+    /** @var Organization */
+    private $organization;
 
     public function __construct(Organization $organization, OrganizationUnitData $organizationUnitData)
     {
+        parent::__construct($organization);
+
         $this->organization = $organization;
         $this->organizationUnitData = $organizationUnitData;
     }
 
-    public function getOrganizationUnitData(): OrganizationUnitData
+    public function getSourceData(): OrganizationUnitData
     {
         return $this->organizationUnitData;
     }
 
-    public function getOrganization(): Organization
+    public function getEntity(): Organization
     {
         return $this->organization;
     }
