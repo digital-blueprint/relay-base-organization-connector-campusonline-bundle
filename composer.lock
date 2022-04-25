@@ -211,12 +211,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
-                "reference": "a7cfc9a64f7a8d3ca11adf365d1ac390df32675a"
+                "reference": "6a0168dd74519f03d53d3ae80748dcf1cc5b0b16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=a7cfc9a64f7a8d3ca11adf365d1ac390df32675a",
-                "reference": "a7cfc9a64f7a8d3ca11adf365d1ac390df32675a",
+                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=6a0168dd74519f03d53d3ae80748dcf1cc5b0b16",
+                "reference": "6a0168dd74519f03d53d3ae80748dcf1cc5b0b16",
                 "shasum": ""
             },
             "require": {
@@ -292,7 +292,7 @@
                 "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/main",
                 "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
             },
-            "time": "2022-04-23T02:24:29+02:00"
+            "time": "2022-04-25T02:15:41+02:00"
         },
         {
             "name": "dbp/relay-core-bundle",
