@@ -173,7 +173,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/campus-online/dbp-campusonline-api",
-                "reference": "2121c20e11d2103f7b78de2209cbe0b928fb1ff4"
+                "reference": "f4df47f05b6d490eaafa5006c61f46e6c5691376"
             },
             "require": {
                 "ext-json": "*",
@@ -203,15 +203,21 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-04-11T00:12:55+00:00"
+            "time": "2022-04-23T00:14:07+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
-                "reference": "25778894bc4947e9daa9be6b786e0e024fb22f1d"
+                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
+                "reference": "a7cfc9a64f7a8d3ca11adf365d1ac390df32675a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=a7cfc9a64f7a8d3ca11adf365d1ac390df32675a",
+                "reference": "a7cfc9a64f7a8d3ca11adf365d1ac390df32675a",
+                "shasum": ""
             },
             "require": {
                 "api-platform/core": "^2.6.3",
@@ -282,7 +288,11 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-04-21T20:13:31+00:00"
+            "support": {
+                "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/main",
+                "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
+            },
+            "time": "2022-04-23T02:24:29+02:00"
         },
         {
             "name": "dbp/relay-core-bundle",
@@ -290,7 +300,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-core-bundle",
-                "reference": "4ede1874cf2f75680fdf0aa839ee358f4c3a4b5d"
+                "reference": "d26c15b56035d0fc4277a8b6e1f49148b1c7653e"
             },
             "require": {
                 "api-platform/core": "^2.6.6",
@@ -351,7 +361,7 @@
                 "AGPL-3.0-or-later"
             ],
             "description": "The core bundle of the Relay API gateway",
-            "time": "2022-04-21T13:52:29+00:00"
+            "time": "2022-04-23T00:26:01+00:00"
         },
         {
             "name": "doctrine/annotations",
