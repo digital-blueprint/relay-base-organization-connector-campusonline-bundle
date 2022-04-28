@@ -10,6 +10,7 @@ use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Dbp\Relay\CoreBundle\LocalData\LocalData;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +34,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizationById(string $identifier, array $options = []): ?Organization
     {
-        $this->eventDispatcher->initRequestedLocalDataAttributes($options['include'] ?? '');
+        $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
 
         $organizationUnitData = null;
 
@@ -54,7 +55,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizations(array $options = []): array
     {
-        $this->eventDispatcher->initRequestedLocalDataAttributes($options['include'] ?? '');
+        $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
 
         $organizations = [];
         try {
