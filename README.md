@@ -42,12 +42,12 @@ https://symfony.com/doc/current/bundles/configuration.html
 
 ## Events
 
-### OrganizationProviderPostEvent
+### OrganizationPostEvent
 
 This event allows you to add additional attributes ("local data") to the `\Dbp\Relay\BaseOrganizationBundle\Entity\Organization` base-entity that you want to be included in responses to `Organization` entity requests.
-Event subscribers receive a `\Dbp\Relay\RelayBaseOrganizationConnectorCampusonlineBundle\Event\OrganizationProviderPostEvent` instance containing the `Organization` base-entity and the organization data provided by Campusonline. Additional attributes are stored in the `localData`-map of the base-entity.
+Event subscribers receive a `\Dbp\Relay\RelayBaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent` instance containing the `Organization` base-entity and the organization data provided by Campusonline.
 
-For example, create an event subscriber `src/EventSubscriber/OrganizationProviderSubscriber.php`:
+For example, create an event subscriber `src/EventSubscriber/OrganizationEventSubscriber.php`:
 
 ```php
 <?php
@@ -56,7 +56,7 @@ namespace App\EventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class OrganizationProviderSubscriber implements EventSubscriberInterface
+class OrganizationEventSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
     {
@@ -69,7 +69,7 @@ class OrganizationProviderSubscriber implements EventSubscriberInterface
     {
         $organization = $event->getOrganization();
         $organizationData = $event->getOrganizationUnitData();
-        $organization->setLocalDataValue('code', $organizationData->getCode());
+        $organization->trySetLocalDataValue('code', $organizationData->getCode());
     }
 }
 ```
@@ -77,7 +77,7 @@ class OrganizationProviderSubscriber implements EventSubscriberInterface
 And add it to your `src/Resources/config/services.yaml`:
 
 ```yaml
-App\EventSubscriber\OrganizationProviderSubscriber:
+App\EventSubscriber\OrganizationEventSubscriber:
   autowire: true
   autoconfigure: true
 ```
