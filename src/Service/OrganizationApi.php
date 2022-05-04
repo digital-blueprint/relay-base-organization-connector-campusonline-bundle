@@ -68,7 +68,7 @@ class OrganizationApi implements LoggerAwareInterface
     /**
      * @throws ApiException
      */
-    public function getOrganizationById(string $identifier, array $options = []): ?OrganizationUnitData
+    public function getOrganizationById(string $identifier, array $options = []): OrganizationUnitData
     {
         return $this->getApi()->OrganizationUnit()->getOrganizationUnitById($identifier, $options);
     }

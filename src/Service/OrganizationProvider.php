@@ -32,20 +32,18 @@ class OrganizationProvider implements OrganizationProviderInterface
     /**
      * @throws ApiError
      */
-    public function getOrganizationById(string $identifier, array $options = []): ?Organization
+    public function getOrganizationById(string $identifier, array $options = []): Organization
     {
         $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
 
         $organizationUnitData = null;
-
         try {
             $organizationUnitData = $this->orgApi->getOrganizationById($identifier, $options);
         } catch (ApiException $e) {
             self::dispatchException($e, $identifier);
         }
 
-        return $organizationUnitData ?
-            self::createOrganizationFromOrganizationUnitData($organizationUnitData) : null;
+        return self::createOrganizationFromOrganizationUnitData($organizationUnitData);
     }
 
     /**
@@ -84,6 +82,8 @@ class OrganizationProvider implements OrganizationProviderInterface
     /**
      * NOTE: Comfortonline returns '401 unauthorized' for some ressources that are not found. So we can't
      * safely return '404' in all cases because '401' is also returned by CO if e.g. the token is not valid.
+     *
+     * @throws ApiError
      */
     private static function dispatchException(ApiException $e, string $identifier)
     {
