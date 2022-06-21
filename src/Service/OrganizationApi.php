@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
+use Dbp\CampusonlineApi\Helpers\Paginator;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
@@ -75,10 +76,8 @@ class OrganizationApi implements LoggerAwareInterface
 
     /**
      * @throws ApiException
-     *
-     * @retrun OrganizationUnitData[]
      */
-    public function getOrganizations(array $options = []): array
+    public function getOrganizations(array $options = []): Paginator
     {
         return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options);
     }

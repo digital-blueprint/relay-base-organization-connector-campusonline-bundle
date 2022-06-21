@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
+use Dbp\CampusonlineApi\Helpers\FullPaginator as CoFullPaginator;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
@@ -12,6 +13,10 @@ use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPost
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\LocalData\LocalData;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
+use Dbp\Relay\CoreBundle\Pagination\FullPaginator;
+use Dbp\Relay\CoreBundle\Pagination\Pagination;
+use Dbp\Relay\CoreBundle\Pagination\Paginator;
+use Dbp\Relay\CoreBundle\Pagination\PartialPaginator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -47,24 +52,31 @@ class OrganizationProvider implements OrganizationProviderInterface
     }
 
     /**
-     * @return Organization[]
-     *
      * @throws ApiError
      */
-    public function getOrganizations(array $options = []): array
+    public function getOrganizations(array $options = []): Paginator
     {
         $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
 
         $organizations = [];
         try {
-            foreach ($this->orgApi->getOrganizations($options) as $organizationUnitData) {
+            $paginator = $this->orgApi->getOrganizations($options);
+            foreach ($paginator->getItems() as $organizationUnitData) {
                 $organizations[] = self::createOrganizationFromOrganizationUnitData($organizationUnitData);
             }
         } catch (ApiException $e) {
             throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
 
-        return $organizations;
+        if (Pagination::isPartialPagination($options)) {
+            return new PartialPaginator($organizations, $paginator->getCurrentPageNumber(), $paginator->getMaxNumItemsPerPage());
+        } else {
+            if ($paginator instanceof CoFullPaginator) {
+                return new FullPaginator($organizations, $paginator->getCurrentPageNumber(), $paginator->getMaxNumItemsPerPage(), $paginator->getTotalNumItems());
+            } else {
+                throw new ApiError(500, 'camppusonline api returned invalid paginator');
+            }
+        }
     }
 
     private function createOrganizationFromOrganizationUnitData(OrganizationUnitData $organizationUnitData): Organization

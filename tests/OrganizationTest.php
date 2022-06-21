@@ -8,6 +8,8 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Dbp\Relay\CoreBundle\Pagination\FullPaginator;
+use Dbp\Relay\CoreBundle\Pagination\PartialPaginator;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -80,10 +82,44 @@ class OrganizationTest extends ApiTestCase
             new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
         ]);
 
-        $result = $this->provider->getOrganizations();
-        $this->assertCount(3, $result);
-        $this->assertSame('2391', $result[0]->getIdentifier());
-        $this->assertSame('18454', $result[1]->getIdentifier());
-        $this->assertSame('18452', $result[2]->getIdentifier());
+        $paginator = $this->provider->getOrganizations();
+        $this->assertInstanceOf(FullPaginator::class, $paginator);
+        $this->assertSame(3.0, $paginator->getTotalItems());
+        $this->assertCount(3, $paginator->getItems());
+
+        $this->assertSame('2391', $paginator->getItems()[0]->getIdentifier());
+        $this->assertSame('18454', $paginator->getItems()[1]->getIdentifier());
+        $this->assertSame('18452', $paginator->getItems()[2]->getIdentifier());
+    }
+
+    public function testGetOrganizationsFullPagination()
+    {
+        $this->mockResponses([
+            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
+        ]);
+
+        $paginator = $this->provider->getOrganizations(['perPage' => 1, 'page' => 2]);
+        $this->assertInstanceOf(FullPaginator::class, $paginator);
+        $this->assertSame(3.0, $paginator->getTotalItems());
+        $this->assertEquals(1, $paginator->getItemsPerPage());
+        $this->assertEquals(2, $paginator->getCurrentPage());
+        $this->assertCount(1, $paginator->getItems());
+
+        $this->assertSame('18454', $paginator->getItems()[0]->getIdentifier());
+    }
+
+    public function testGetOrganizationsPartialPagination()
+    {
+        $this->mockResponses([
+            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
+        ]);
+
+        $paginator = $this->provider->getOrganizations(['partialPagination' => true, 'perPage' => 1, 'page' => 3]);
+        $this->assertInstanceOf(PartialPaginator::class, $paginator);
+        $this->assertEquals(1, $paginator->getItemsPerPage());
+        $this->assertEquals(3, $paginator->getCurrentPage());
+        $this->assertCount(1, $paginator->getItems());
+
+        $this->assertSame('18452', $paginator->getItems()[0]->getIdentifier());
     }
 }
