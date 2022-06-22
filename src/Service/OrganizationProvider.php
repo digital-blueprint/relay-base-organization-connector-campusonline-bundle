@@ -7,6 +7,7 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 use Dbp\CampusonlineApi\Helpers\FullPaginator as CoFullPaginator;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
+use Dbp\CampusonlineApi\LegacyWebService\ResourceData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
@@ -57,6 +58,7 @@ class OrganizationProvider implements OrganizationProviderInterface
     public function getOrganizations(array $options = []): Paginator
     {
         $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
+        $this->addFilterOptions($options);
 
         $organizations = [];
         try {
@@ -89,6 +91,13 @@ class OrganizationProvider implements OrganizationProviderInterface
         $this->eventDispatcher->dispatch($postEvent, OrganizationPostEvent::NAME);
 
         return $postEvent->getEntity();
+    }
+
+    private function addFilterOptions(array &$options)
+    {
+        if (($searchParameter = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) && $searchParameter !== '') {
+            $options[ResourceData::NAME_SEARCH_FILTER_NAME] = $searchParameter;
+        }
     }
 
     /**
