@@ -11,8 +11,8 @@ use Dbp\CampusonlineApi\LegacyWebService\ResourceData;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPreEvent;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
-use Dbp\Relay\CoreBundle\LocalData\LocalData;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
 use Dbp\Relay\CoreBundle\Pagination\FullPaginator;
 use Dbp\Relay\CoreBundle\Pagination\Pagination;
@@ -36,11 +36,15 @@ class OrganizationProvider implements OrganizationProviderInterface
     }
 
     /**
+     * @param array $options Available options:
+     *                       * 'lang' ('de' or 'en')
+     *                       * LocalData::INCLUDE_PARAMETER_NAME
+     *
      * @throws ApiError
      */
     public function getOrganizationById(string $identifier, array $options = []): Organization
     {
-        $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
+        $this->eventDispatcher->onNewOperation($options);
 
         $organizationUnitData = null;
         try {
@@ -53,11 +57,22 @@ class OrganizationProvider implements OrganizationProviderInterface
     }
 
     /**
+     * @param array $options Available options:
+     *                       * 'lang' ('de' or 'en')
+     *                       * Organization::SEARCH_PARAMETER_NAME (partial, case-insensitive text search on 'name' attribute)
+     *                       * LocalData::INCLUDE_PARAMETER_NAME
+     *                       * LocalData::QUERY_PARAMETER_NAME
+     *
      * @throws ApiError
      */
     public function getOrganizations(array $options = []): Paginator
     {
-        $this->eventDispatcher->initRequestedLocalDataAttributes(LocalData::getIncludeParameter($options));
+        $this->eventDispatcher->onNewOperation($options);
+
+        $preEvent = new OrganizationPreEvent();
+        $this->eventDispatcher->dispatch($preEvent, OrganizationPreEvent::NAME);
+        $options = array_merge($options, $preEvent->getQueryParameters());
+
         $this->addFilterOptions($options);
 
         $organizations = [];

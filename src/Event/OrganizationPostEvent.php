@@ -6,9 +6,9 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event;
 
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
-use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEvent;
+use Dbp\Relay\CoreBundle\LocalData\LocalDataAwarePostEvent;
 
-class OrganizationPostEvent extends LocalDataAwareEvent
+class OrganizationPostEvent extends LocalDataAwarePostEvent
 {
     public const NAME = 'dbp.relay.relay_base_organization_connector_campusonline.organization_provider.post';
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fbe09492bfc007d496212867ecf9c13",
+    "content-hash": "efbcfc1be5d4c638e37d3371652c0709",
     "packages": [
         {
             "name": "api-platform/core",
@@ -169,11 +169,11 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "v0.2.5",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/campus-online/dbp-campusonline-api",
-                "reference": "dd6955153c6b2ce7712b609f057c34d1d62a722d"
+                "reference": "5fbb5e98ec9d53556fbbe9cdecedb8d1811c1a90"
             },
             "require": {
                 "ext-json": "*",
@@ -192,6 +192,7 @@
                 "symfony/phpunit-bridge": "^5.2",
                 "vimeo/psalm": "^4.2.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -202,25 +203,19 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-06-22T09:09:33+00:00"
+            "time": "2022-08-10T08:49:40+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
-            "version": "v0.1.7",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
-                "reference": "530a1917a414e4e78ef28b12fb1e1b1a4ae1de56"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=530a1917a414e4e78ef28b12fb1e1b1a4ae1de56",
-                "reference": "530a1917a414e4e78ef28b12fb1e1b1a4ae1de56",
-                "shasum": ""
+                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
+                "reference": "4088fa994f19ced2b9c047667c65ffa2248a575a"
             },
             "require": {
                 "api-platform/core": "^2.6.3",
-                "dbp/relay-core-bundle": "^0.1.37",
+                "dbp/relay-core-bundle": "dev-main as 0.1.37",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0",
                 "nelmio/cors-bundle": "^2.1.0",
@@ -247,6 +242,7 @@
                 "symfony/phpunit-bridge": "^5.2",
                 "vimeo/psalm": "^4.4"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
@@ -286,19 +282,15 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "support": {
-                "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/v0.1.7",
-                "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
-            },
-            "time": "2022-06-22T13:23:23+02:00"
+            "time": "2022-08-16T08:32:10+00:00"
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "0.1.37",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-core-bundle",
-                "reference": "b58c833026de0aa0572a38684d0b0f2107e46aee"
+                "reference": "d4686f81efdec53c082808c1c827c3d2912dabac"
             },
             "require": {
                 "api-platform/core": "^2.6.6",
@@ -307,6 +299,8 @@
                 "ext-fileinfo": "*",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0",
+                "kevinrob/guzzle-cache-middleware": "^4.0",
+                "league/uri": "^6.5",
                 "nelmio/cors-bundle": "^2.1.0",
                 "php": "^7.3 || ^8.0",
                 "phpdocumentor/reflection-docblock": "^3.0 || ^4.0 || ^5.0",
@@ -334,12 +328,14 @@
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "phpstan/phpstan": "^1.0.0",
                 "phpstan/phpstan-phpunit": "^1.0.0",
+                "phpstan/phpstan-symfony": "^1.2",
                 "phpunit/phpunit": "^9",
                 "symfony/browser-kit": "^5.3",
                 "symfony/http-client": "^5.3",
                 "symfony/phpunit-bridge": "^5.3",
                 "vimeo/psalm": "^4.4"
             },
+            "default-branch": true,
             "type": "symfony-bundle",
             "extra": {
                 "hooks": {
@@ -358,7 +354,7 @@
                 "AGPL-3.0-or-later"
             ],
             "description": "The core bundle of the Relay API gateway",
-            "time": "2022-06-22T09:04:47+00:00"
+            "time": "2022-08-16T08:35:41+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -10371,9 +10367,32 @@
             "time": "2015-12-17T08:42:14+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "dbp/campusonline-api",
+            "version": "dev-main",
+            "alias": "0.2.5",
+            "alias_normalized": "0.2.5.0"
+        },
+        {
+            "package": "dbp/relay-base-organization-bundle",
+            "version": "dev-main",
+            "alias": "0.1.7",
+            "alias_normalized": "0.1.7.0"
+        },
+        {
+            "package": "dbp/relay-core-bundle",
+            "version": "dev-main",
+            "alias": "0.1.37",
+            "alias_normalized": "0.1.37.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "dbp/campusonline-api": 20,
+        "dbp/relay-base-organization-bundle": 20,
+        "dbp/relay-core-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -10384,5 +10403,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
