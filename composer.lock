@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8e60e533a16017074637e9bea4db5aa",
+    "content-hash": "63886b5fd6fd3bde8ffa780416bd776b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -209,14 +209,8 @@
             "version": "v0.1.8",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle.git",
+                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
                 "reference": "10d6130597efd53db167379268457b546f8f3eec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.tugraz.at/api/v4/projects/dbp%2Frelay%2Fdbp-relay-base-organization-bundle/repository/archive.zip?sha=10d6130597efd53db167379268457b546f8f3eec",
-                "reference": "10d6130597efd53db167379268457b546f8f3eec",
-                "shasum": ""
             },
             "require": {
                 "api-platform/core": "^2.6.3",
@@ -286,10 +280,6 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "support": {
-                "source": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/tree/v0.1.8",
-                "issues": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle/-/issues"
-            },
             "time": "2022-08-16T13:34:05+02:00"
         },
         {
