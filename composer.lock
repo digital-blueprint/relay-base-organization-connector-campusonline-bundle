@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c531c7c8eb76212e63ec6e1a370f5bb",
+    "content-hash": "03cc4d049777517434e6edb04495006a",
     "packages": [
         {
             "name": "api-platform/core",
@@ -209,7 +209,7 @@
             "version": "v0.1.8",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git",
+                "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle",
                 "reference": "10d6130597efd53db167379268457b546f8f3eec"
             },
             "require": {
@@ -247,36 +247,7 @@
                     "Dbp\\Relay\\BaseOrganizationBundle\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Dbp\\Relay\\BaseOrganizationBundle\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "@php vendor/bin/phpunit"
-                ],
-                "phpstan": [
-                    "@php vendor/bin/phpstan analyze --ansi"
-                ],
-                "psalm": [
-                    "@php vendor/bin/psalm"
-                ],
-                "lint": [
-                    "@composer run cs",
-                    "@composer run phpstan",
-                    "@composer run psalm"
-                ],
-                "cs-fix": [
-                    "@php vendor/bin/php-cs-fixer --ansi fix"
-                ],
-                "cs": [
-                    "@php vendor/bin/php-cs-fixer --ansi fix --dry-run --diff"
-                ],
-                "coverage": [
-                    "@php -dxdebug.mode=coverage vendor/bin/simple-phpunit --coverage-html _coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "AGPL-3.0-or-later"
             ],

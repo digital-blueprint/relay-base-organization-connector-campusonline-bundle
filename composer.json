@@ -23,12 +23,6 @@
         "symfony/phpunit-bridge": "^5.4.11",
         "vimeo/psalm": "^4.26"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@gitlab.tugraz.at:dbp/relay/dbp-relay-base-organization-bundle.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Dbp\\Relay\\BaseOrganizationConnectorCampusonlineBundle\\": "src/"
