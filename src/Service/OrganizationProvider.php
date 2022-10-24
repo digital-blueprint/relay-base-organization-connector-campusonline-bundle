@@ -58,10 +58,11 @@ class OrganizationProvider implements OrganizationProviderInterface
 
     /**
      * @param array $options Available options:
-     *                       * 'lang' ('de' or 'en')
-     *                       * Organization::SEARCH_PARAMETER_NAME (partial, case-insensitive text search on 'name' attribute)
-     *                       * LocalData::INCLUDE_PARAMETER_NAME
-     *                       * LocalData::QUERY_PARAMETER_NAME
+     *                       * string 'lang' ('de' or 'en')
+     *                       * array 'identifiers' The list of organizations to return
+     *                       * string Organization::SEARCH_PARAMETER_NAME (partial, case-insensitive text search on 'name' attribute)
+     *                       * string LocalData::INCLUDE_PARAMETER_NAME
+     *                       * string LocalData::QUERY_PARAMETER_NAME
      *
      * @throws ApiError
      */
