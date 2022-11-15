@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
-use Dbp\CampusonlineApi\Helpers\Paginator;
+use Dbp\CampusonlineApi\Helpers\Pagination;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
@@ -17,13 +17,19 @@ class OrganizationApi implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /*
-     * @var Api
-     */
+    /** @var Api */
     private $api;
+
+    /** @var array */
     private $config;
+
+    /** @var object|null */
     private $clientHandler;
+
+    /** @var CacheItemPoolInterface|null */
     private $cachePool;
+
+    /** @var int */
     private $cacheTTL;
 
     public function __construct()
@@ -75,11 +81,17 @@ class OrganizationApi implements LoggerAwareInterface
     }
 
     /**
+     * @return OrganizationUnitData[]
+     *
      * @throws ApiException
      */
-    public function getOrganizations(array $options = []): Paginator
+    public function getOrganizations(int $currentPageNumber, int $maxNumItemsPerPage, array $options = []): array
     {
-        return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options);
+        $options[Pagination::CURRENT_PAGE_NUMBER_PARAMETER_NAME] = $currentPageNumber;
+        $options[Pagination::MAX_NUM_ITEMS_PER_PAGE_PARAMETER_NAME] = $maxNumItemsPerPage;
+        $options[Pagination::IS_PARTIAL_PAGINATION_PARAMETER_NAME] = true;
+
+        return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options)->getItems();
     }
 
     private function getApi(): Api

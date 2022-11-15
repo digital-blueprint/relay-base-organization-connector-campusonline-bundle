@@ -8,7 +8,7 @@
         "ext-json": "*",
         "api-platform/core": "^2.6",
         "dbp/campusonline-api": "^0.2.6",
-        "dbp/relay-base-organization-bundle": "^0.1.8",
+        "dbp/relay-base-organization-bundle": "^0.2.0",
         "dbp/relay-core-bundle": "^0.1.38",
         "symfony/framework-bundle": "^5.4"
     },

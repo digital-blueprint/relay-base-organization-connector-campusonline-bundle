@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
-use Dbp\CampusonlineApi\Helpers\FullPaginator as CoFullPaginator;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
 use Dbp\CampusonlineApi\LegacyWebService\ResourceData;
@@ -14,10 +13,6 @@ use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPost
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPreEvent;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
-use Dbp\Relay\CoreBundle\Pagination\FullPaginator;
-use Dbp\Relay\CoreBundle\Pagination\Pagination;
-use Dbp\Relay\CoreBundle\Pagination\Paginator;
-use Dbp\Relay\CoreBundle\Pagination\PartialPaginator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -58,15 +53,17 @@ class OrganizationProvider implements OrganizationProviderInterface
 
     /**
      * @param array $options Available options:
-     *                       * string 'lang' ('de' or 'en')
-     *                       * array 'identifiers' The list of organizations to return
-     *                       * string Organization::SEARCH_PARAMETER_NAME (partial, case-insensitive text search on 'name' attribute)
-     *                       * string LocalData::INCLUDE_PARAMETER_NAME
-     *                       * string LocalData::QUERY_PARAMETER_NAME
+     *                       * Locale::LANGUAGE_OPTION (language in ISO 639‑1 format)
+     *                       * 'identifiers' The list of organizations to return
+     *                       * Organization::SEARCH_PARAMETER_NAME (partial, case-insensitive text search on 'name' attribute)
+     *                       * LocalData::INCLUDE_PARAMETER_NAME
+     *                       * LocalData::QUERY_PARAMETER_NAME
+     *
+     * @return Organization[]
      *
      * @throws ApiError
      */
-    public function getOrganizations(array $options = []): Paginator
+    public function getOrganizations(int $currentPageNumber, int $maxNumItemsPerPage, array $options = []): array
     {
         $this->eventDispatcher->onNewOperation($options);
 
@@ -78,23 +75,14 @@ class OrganizationProvider implements OrganizationProviderInterface
 
         $organizations = [];
         try {
-            $paginator = $this->orgApi->getOrganizations($options);
-            foreach ($paginator->getItems() as $organizationUnitData) {
+            foreach ($this->orgApi->getOrganizations($currentPageNumber, $maxNumItemsPerPage, $options) as $organizationUnitData) {
                 $organizations[] = self::createOrganizationFromOrganizationUnitData($organizationUnitData);
             }
         } catch (ApiException $e) {
             throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
 
-        if (Pagination::isPartialPagination($options)) {
-            return new PartialPaginator($organizations, $paginator->getCurrentPageNumber(), $paginator->getMaxNumItemsPerPage());
-        } else {
-            if ($paginator instanceof CoFullPaginator) {
-                return new FullPaginator($organizations, $paginator->getCurrentPageNumber(), $paginator->getMaxNumItemsPerPage(), $paginator->getTotalNumItems());
-            } else {
-                throw new ApiError(500, 'camppusonline api returned invalid paginator');
-            }
-        }
+        return $organizations;
     }
 
     private function createOrganizationFromOrganizationUnitData(OrganizationUnitData $organizationUnitData): Organization
