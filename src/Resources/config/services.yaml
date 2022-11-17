@@ -7,5 +7,9 @@ services:
     autowire: true
     autoconfigure: true
 
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\HealthCheck:
+    autowire: true
+    autoconfigure: true
+
   Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface:
     '@Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider'

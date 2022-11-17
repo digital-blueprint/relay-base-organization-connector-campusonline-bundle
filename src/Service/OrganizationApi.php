@@ -69,7 +69,7 @@ class OrganizationApi implements LoggerAwareInterface
      */
     public function checkConnection()
     {
-        $this->getApi()->OrganizationUnit()->getOrganizationUnits();
+        $this->getApi()->OrganizationUnit()->checkConnection();
     }
 
     /**
