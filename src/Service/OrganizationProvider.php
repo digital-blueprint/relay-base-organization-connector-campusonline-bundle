@@ -12,7 +12,7 @@ use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPreEvent;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
-use Dbp\Relay\CoreBundle\LocalData\LocalDataAwareEventDispatcher;
+use Dbp\Relay\CoreBundle\LocalData\LocalDataEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,13 +21,13 @@ class OrganizationProvider implements OrganizationProviderInterface
     /** @var OrganizationApi */
     private $orgApi;
 
-    /** @var LocalDataAwareEventDispatcher */
+    /** @var LocalDataEventDispatcher */
     private $eventDispatcher;
 
     public function __construct(OrganizationApi $orgApi, EventDispatcherInterface $eventDispatcher)
     {
         $this->orgApi = $orgApi;
-        $this->eventDispatcher = new LocalDataAwareEventDispatcher(Organization::class, $eventDispatcher);
+        $this->eventDispatcher = new LocalDataEventDispatcher(Organization::class, $eventDispatcher);
     }
 
     /**
@@ -91,10 +91,10 @@ class OrganizationProvider implements OrganizationProviderInterface
         $organization->setIdentifier($organizationUnitData->getIdentifier());
         $organization->setName($organizationUnitData->getName());
 
-        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData);
+        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData());
         $this->eventDispatcher->dispatch($postEvent, OrganizationPostEvent::NAME);
 
-        return $postEvent->getEntity();
+        return $organization;
     }
 
     private function addFilterOptions(array &$options)

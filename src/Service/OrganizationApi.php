@@ -89,7 +89,6 @@ class OrganizationApi implements LoggerAwareInterface
     {
         $options[Pagination::CURRENT_PAGE_NUMBER_PARAMETER_NAME] = $currentPageNumber;
         $options[Pagination::MAX_NUM_ITEMS_PER_PAGE_PARAMETER_NAME] = $maxNumItemsPerPage;
-        $options[Pagination::IS_PARTIAL_PAGINATION_PARAMETER_NAME] = true;
 
         return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options)->getItems();
     }
