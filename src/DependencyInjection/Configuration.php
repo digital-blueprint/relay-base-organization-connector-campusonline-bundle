@@ -25,17 +25,6 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->append(OrganizationPostEventSubscriber::getConfigNode())
-//                ->arrayNode(self::LOCAL_DATA_MAPPING_NODE)
-//                    ->arrayPrototype()
-//                        ->children()
-//                            ->scalarNode(self::SOURCE_ATTRIBUTE_KEY)->end()
-//                            ->scalarNode(self::LOCAL_DATA_ATTRIBUTE_KEY)->end()
-//                            ->scalarNode(self::AUTHORIZATION_EXPRESSION_KEY)
-//                                ->defaultValue('false')
-//                            ->end()
-//                        ->end()
-//                    ->end()
-//                ->end()
             ->end();
 
         return $treeBuilder;
