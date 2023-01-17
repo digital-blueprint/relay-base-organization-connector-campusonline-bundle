@@ -24,7 +24,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('org_root_id')->end()
                     ->end()
                 ->end()
-                ->append(OrganizationPostEventSubscriber::getConfigNode())
+                ->append(OrganizationPostEventSubscriber::getLocalDataMappingConfigNodeDefinition())
             ->end();
 
         return $treeBuilder;
