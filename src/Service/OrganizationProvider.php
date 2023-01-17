@@ -68,7 +68,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         $this->eventDispatcher->onNewOperation($options);
 
         $preEvent = new OrganizationPreEvent();
-        $this->eventDispatcher->dispatch($preEvent, OrganizationPreEvent::NAME);
+        $this->eventDispatcher->dispatch($preEvent);
         $options = array_merge($options, $preEvent->getQueryParameters());
 
         $this->addFilterOptions($options);
@@ -92,7 +92,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         $organization->setName($organizationUnitData->getName());
 
         $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData());
-        $this->eventDispatcher->dispatch($postEvent, OrganizationPostEvent::NAME);
+        $this->eventDispatcher->dispatch($postEvent);
 
         return $organization;
     }

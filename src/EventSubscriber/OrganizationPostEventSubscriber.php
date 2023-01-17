@@ -11,6 +11,6 @@ class OrganizationPostEventSubscriber extends AbstractLocalDataPostEventSubscrib
 {
     public static function getSubscribedEventName(): string
     {
-        return OrganizationPostEvent::NAME;
+        return OrganizationPostEvent::class;
     }
 }
