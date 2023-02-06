@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
+use Dbp\CampusonlineApi\Helpers\Filters;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
-use Dbp\CampusonlineApi\LegacyWebService\ResourceData;
+use Dbp\CampusonlineApi\LegacyWebService\ResourceApi;
 use Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
@@ -67,9 +68,9 @@ class OrganizationProvider implements OrganizationProviderInterface
     {
         $this->eventDispatcher->onNewOperation($options);
 
-        $preEvent = new OrganizationPreEvent();
+        $preEvent = new OrganizationPreEvent($options);
         $this->eventDispatcher->dispatch($preEvent);
-        $options = array_merge($options, $preEvent->getQueryParameters());
+        $options = $preEvent->getOptions();
 
         $this->addFilterOptions($options);
 
@@ -100,7 +101,8 @@ class OrganizationProvider implements OrganizationProviderInterface
     private function addFilterOptions(array &$options)
     {
         if (($searchParameter = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) && $searchParameter !== '') {
-            $options[ResourceData::NAME_SEARCH_FILTER_NAME] = $searchParameter;
+            unset($options[Organization::SEARCH_PARAMETER_NAME]);
+            ResourceApi::addFilter($options, OrganizationUnitData::NAME_ATTRIBUTE, Filters::CONTAINS_CI_OPERATOR, $searchParameter, Filters::LOGICAL_OR_OPERATOR);
         }
     }
 

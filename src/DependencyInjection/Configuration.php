@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection;
 
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationPostEventSubscriber;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -24,7 +24,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('org_root_id')->end()
                     ->end()
                 ->end()
-                ->append(OrganizationPostEventSubscriber::getLocalDataMappingConfigNodeDefinition())
+                ->append(OrganizationEventSubscriber::getLocalDataMappingConfigNodeDefinition())
             ->end();
 
         return $treeBuilder;
