@@ -206,11 +206,11 @@
         },
         {
             "name": "dbp/relay-base-organization-bundle",
-            "version": "v0.2.1",
+            "version": "v0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle",
-                "reference": "bb228abfa35ff2972d0a8dd1e6233b4e4758f5c1"
+                "reference": "c585b6423c3d5fa20e31ac1dedb2bef150453b38"
             },
             "require": {
                 "api-platform/core": "^2.6.8",
@@ -251,15 +251,15 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2022-12-01T13:20:03+00:00"
+            "time": "2023-02-15T14:41:15+00:00"
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.74",
+            "version": "v0.1.76",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-core-bundle",
-                "reference": "1d43096e7e5a5a1289d76ef0d0d1819d6f9a66ac"
+                "reference": "6b86617395c0d39c20d5f6327787b8713b4dc406"
             },
             "require": {
                 "api-platform/core": "^2.6.8 <2.7.0",
@@ -323,7 +323,7 @@
                 "AGPL-3.0-or-later"
             ],
             "description": "The core bundle of the Relay API gateway",
-            "time": "2023-02-07T12:00:47+00:00"
+            "time": "2023-02-14T14:23:10+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1319,29 +1319,30 @@
         },
         {
             "name": "nelmio/cors-bundle",
-            "version": "2.2.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nelmio/NelmioCorsBundle.git",
-                "reference": "0ee5ee30b0ee08ea122d431ae6e0ddeb87f035c0"
+                "reference": "185d2c0ae50a3f0b628790170164d5f1c5b7c281"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nelmio/NelmioCorsBundle/zipball/0ee5ee30b0ee08ea122d431ae6e0ddeb87f035c0",
-                "reference": "0ee5ee30b0ee08ea122d431ae6e0ddeb87f035c0",
+                "url": "https://api.github.com/repos/nelmio/NelmioCorsBundle/zipball/185d2c0ae50a3f0b628790170164d5f1c5b7c281",
+                "reference": "185d2c0ae50a3f0b628790170164d5f1c5b7c281",
                 "shasum": ""
             },
             "require": {
-                "symfony/framework-bundle": "^4.3 || ^5.0 || ^6.0"
+                "psr/log": "^1.0 || ^2.0 || ^3.0",
+                "symfony/framework-bundle": "^4.4 || ^5.4 || ^6.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.2",
-                "symfony/phpunit-bridge": "^4.3 || ^5.0 || ^6.0"
+                "symfony/phpunit-bridge": "^4.4 || ^5.4 || ^6.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -1374,9 +1375,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nelmio/NelmioCorsBundle/issues",
-                "source": "https://github.com/nelmio/NelmioCorsBundle/tree/2.2.0"
+                "source": "https://github.com/nelmio/NelmioCorsBundle/tree/2.3.1"
             },
-            "time": "2021-12-01T09:34:27+00:00"
+            "time": "2023-02-16T08:49:29+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -7838,16 +7839,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.9.17",
+            "version": "1.9.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "204e459e7822f2c586463029f5ecec31bb45a1f2"
+                "reference": "f2d5cf71be91172a57c649770b73c20ebcffb0bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/204e459e7822f2c586463029f5ecec31bb45a1f2",
-                "reference": "204e459e7822f2c586463029f5ecec31bb45a1f2",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f2d5cf71be91172a57c649770b73c20ebcffb0bf",
+                "reference": "f2d5cf71be91172a57c649770b73c20ebcffb0bf",
                 "shasum": ""
             },
             "require": {
@@ -7877,7 +7878,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.9.17"
+                "source": "https://github.com/phpstan/phpstan/tree/1.9.18"
             },
             "funding": [
                 {
@@ -7893,7 +7894,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-08T12:25:00+00:00"
+            "time": "2023-02-17T15:01:27+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
