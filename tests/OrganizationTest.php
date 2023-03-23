@@ -8,11 +8,8 @@ use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
-use Dbp\Relay\CoreBundle\Authorization\AuthorizationDataMuxer;
-use Dbp\Relay\CoreBundle\Authorization\AuthorizationDataProviderProvider;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\LocalData\LocalData;
-use Dbp\Relay\CoreBundle\TestUtils\TestUserSession;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -36,15 +33,11 @@ class OrganizationTest extends ApiTestCase
             [
                 'local_data_attribute' => self::ORGANIZATION_CODE_ATTRIBUTE_NAME,
                 'source_attribute' => self::ORGANIZATION_CODE_ATTRIBUTE_NAME,
-                'authorization_expression' => 'true',
-                'allow_query' => false,
                 'default_value' => '',
             ],
             [
                 'local_data_attribute' => self::ADDRESS_LOCALITY_ATTRIBUTE_NAME,
                 'source_attribute' => self::ADDRESS_LOCALITY_ATTRIBUTE_NAME,
-                'authorization_expression' => 'true',
-                'allow_query' => true,
                 'default_value' => '',
             ],
         ];
@@ -58,7 +51,6 @@ class OrganizationTest extends ApiTestCase
 
         $eventDispatcher = new EventDispatcher();
         $localDataEventSubscriber = new OrganizationEventSubscriber();
-        $localDataEventSubscriber->_injectServices(new TestUserSession('testuser'), new AuthorizationDataMuxer(new AuthorizationDataProviderProvider([]), new EventDispatcher()));
         $localDataEventSubscriber->setConfig(self::createConfig());
         $eventDispatcher->addSubscriber($localDataEventSubscriber);
         $this->organizationApi = new OrganizationApi();
@@ -90,7 +82,7 @@ class OrganizationTest extends ApiTestCase
         ]);
 
         $options = [];
-        LocalData::addIncludeParameter($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
+        LocalData::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
         $org = $this->organizationProvider->getOrganizationById('2322', $options);
 
         $this->assertSame('2322', $org->getIdentifier());
@@ -150,7 +142,7 @@ class OrganizationTest extends ApiTestCase
         ]);
 
         $options = [];
-        LocalData::addIncludeParameter($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
+        LocalData::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
         $organizations = $this->organizationProvider->getOrganizations(1, 10, $options);
         $this->assertCount(3, $organizations);
 
@@ -168,9 +160,12 @@ class OrganizationTest extends ApiTestCase
             new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
         ]);
 
+        $filters = [];
+        $filters[LocalData::INCLUDE_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME;
+        $filters[LocalData::QUERY_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME.':graz';
         $options = [];
-        LocalData::addIncludeParameter($options, [self::ADDRESS_LOCALITY_ATTRIBUTE_NAME]);
-        $options[LocalData::QUERY_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME.':graz';
+        LocalData::addOptions($options, $filters);
+
         $organizations = $this->organizationProvider->getOrganizations(1, 10, $options);
         $this->assertCount(1, $organizations);
 
