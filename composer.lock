@@ -216,15 +216,15 @@
         },
         {
             "name": "dbp/relay-base-organization-bundle",
-            "version": "v0.2.2",
+            "version": "v0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.tugraz.at/dbp/relay/dbp-relay-base-organization-bundle",
-                "reference": "c585b6423c3d5fa20e31ac1dedb2bef150453b38"
+                "reference": "c8858acadf8871079d023ac2ef08bd0fe25021be"
             },
             "require": {
                 "api-platform/core": "^2.6.8",
-                "dbp/relay-core-bundle": "^0.1.43",
+                "dbp/relay-core-bundle": "^0.1.91",
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0",
                 "nelmio/cors-bundle": "^2.1.0",
@@ -261,7 +261,7 @@
             "license": [
                 "AGPL-3.0-or-later"
             ],
-            "time": "2023-02-15T14:41:15+00:00"
+            "time": "2023-03-23T09:18:45+00:00"
         },
         {
             "name": "dbp/relay-core-bundle",
@@ -10369,5 +10369,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
