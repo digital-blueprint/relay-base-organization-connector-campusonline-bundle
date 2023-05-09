@@ -26,6 +26,11 @@ class OrganizationTest extends ApiTestCase
     /** @var OrganizationProvider */
     private $organizationProvider;
 
+    public function testContainer()
+    {
+        $this->assertNotNull(ApiTestCase::createClient());
+    }
+
     private static function createConfig(): array
     {
         $config = [];
