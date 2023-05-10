@@ -21,11 +21,12 @@ class OrganizationEventSubscriber extends AbstractLocalDataEventSubscriber
             ];
     }
 
-    protected function onPreEvent(LocalDataPreEvent $preEvent, array $mappedQueryParameters)
+    protected function onPreEvent(LocalDataPreEvent $preEvent, array $localQueryAttributes)
     {
         $options = $preEvent->getOptions();
-        foreach ($mappedQueryParameters as $sourceParameterName => $parameterValue) {
-            ResourceApi::addFilter($options, $sourceParameterName, Filters::CONTAINS_CI_OPERATOR, $parameterValue);
+        foreach ($localQueryAttributes as $localQueryAttribute) {
+            ResourceApi::addFilter($options, $localQueryAttribute[parent::LOCAL_QUERY_PARAMETER_SOURCE_ATTRIBUTE_KEY],
+                Filters::CONTAINS_CI_OPERATOR, $localQueryAttribute[parent::LOCAL_QUERY_PARAMETER_VALUE_KEY]);
         }
         $preEvent->setOptions($options);
     }
