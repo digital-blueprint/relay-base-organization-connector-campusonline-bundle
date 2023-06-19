@@ -13,6 +13,7 @@ use Dbp\Relay\CoreBundle\LocalData\LocalData;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class OrganizationTest extends ApiTestCase
@@ -59,6 +60,7 @@ class OrganizationTest extends ApiTestCase
         $localDataEventSubscriber->setConfig(self::createConfig());
         $eventDispatcher->addSubscriber($localDataEventSubscriber);
         $this->organizationApi = new OrganizationApi();
+        $this->organizationApi->setCache(new ArrayAdapter(3600, true, 3600, 356), 3600);
         $this->organizationProvider = new OrganizationProvider($this->organizationApi, $eventDispatcher);
         $this->mockResponses([]);
     }
