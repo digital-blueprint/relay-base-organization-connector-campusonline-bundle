@@ -92,7 +92,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         $organization->setIdentifier($organizationUnitData->getIdentifier());
         $organization->setName($organizationUnitData->getName());
 
-        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData());
+        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData(), $this->orgApi);
         $this->eventDispatcher->dispatch($postEvent);
 
         return $organization;
