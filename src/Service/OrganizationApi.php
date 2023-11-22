@@ -7,11 +7,14 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 use Dbp\CampusonlineApi\Helpers\Pagination;
 use Dbp\CampusonlineApi\LegacyWebService\Api;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
+use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitApi;
 use Dbp\CampusonlineApi\LegacyWebService\Organization\OrganizationUnitData;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\RebuildingOrganizationCacheEvent;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class OrganizationApi implements LoggerAwareInterface
 {
@@ -19,6 +22,9 @@ class OrganizationApi implements LoggerAwareInterface
 
     /** @var Api */
     private $api;
+
+    /** @var OrganizationUnitApi */
+    private $orgUnitApi;
 
     /** @var array */
     private $config;
@@ -32,9 +38,13 @@ class OrganizationApi implements LoggerAwareInterface
     /** @var int */
     private $cacheTTL;
 
-    public function __construct()
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->config = [];
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function setCache(?CacheItemPoolInterface $cachePool, int $ttl)
@@ -69,7 +79,7 @@ class OrganizationApi implements LoggerAwareInterface
      */
     public function checkConnection()
     {
-        $this->getApi()->OrganizationUnit()->checkConnection();
+        $this->getOrganizationUnitApi()->checkConnection();
     }
 
     /**
@@ -77,7 +87,7 @@ class OrganizationApi implements LoggerAwareInterface
      */
     public function getOrganizationById(string $identifier, array $options = []): OrganizationUnitData
     {
-        return $this->getApi()->OrganizationUnit()->getOrganizationUnitById($identifier, $options);
+        return $this->getOrganizationUnitApi()->getOrganizationUnitById($identifier, $options);
     }
 
     /**
@@ -90,7 +100,7 @@ class OrganizationApi implements LoggerAwareInterface
         $options[Pagination::CURRENT_PAGE_NUMBER_PARAMETER_NAME] = $currentPageNumber;
         $options[Pagination::MAX_NUM_ITEMS_PER_PAGE_PARAMETER_NAME] = $maxNumItemsPerPage;
 
-        return $this->getApi()->OrganizationUnit()->getOrganizationUnits($options)->getItems();
+        return $this->getOrganizationUnitApi()->getOrganizationUnits($options)->getItems();
     }
 
     private function getApi(): Api
@@ -105,5 +115,27 @@ class OrganizationApi implements LoggerAwareInterface
         }
 
         return $this->api;
+    }
+
+    private function getOrganizationUnitApi(): OrganizationUnitApi
+    {
+        if ($this->orgUnitApi === null) {
+            $this->orgUnitApi = $this->getApi()->OrganizationUnit();
+            $this->orgUnitApi->setOnRebuildingResourceCacheCallback(function () {
+                $this->onRebuildingResourceCacheCallback();
+            });
+        }
+
+        return $this->orgUnitApi;
+    }
+
+    private function onRebuildingResourceCacheCallback()
+    {
+        $this->eventDispatcher->dispatch(new RebuildingOrganizationCacheEvent($this));
+    }
+
+    public function setIsOrganizationCallback($isOrganizationCallback)
+    {
+        $this->getOrganizationUnitApi()->setIsResourceNodeCallback($isOrganizationCallback);
     }
 }

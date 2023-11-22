@@ -59,7 +59,7 @@ class OrganizationTest extends ApiTestCase
         $localDataEventSubscriber = new OrganizationEventSubscriber();
         $localDataEventSubscriber->setConfig(self::createConfig());
         $eventDispatcher->addSubscriber($localDataEventSubscriber);
-        $this->organizationApi = new OrganizationApi();
+        $this->organizationApi = new OrganizationApi(new EventDispatcher());
         $this->organizationApi->setCache(new ArrayAdapter(3600, true, 3600, 356), 3600);
         $this->organizationProvider = new OrganizationProvider($this->organizationApi, $eventDispatcher);
         $this->mockResponses([]);

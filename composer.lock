@@ -177,16 +177,16 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "v0.3.10",
+            "version": "v0.3.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "5707e4c98ab57ef06b6e8ccecd99b8f654a760e5"
+                "reference": "1d666f255e9ae20a1e93823d87069df359c38f69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/5707e4c98ab57ef06b6e8ccecd99b8f654a760e5",
-                "reference": "5707e4c98ab57ef06b6e8ccecd99b8f654a760e5",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/1d666f255e9ae20a1e93823d87069df359c38f69",
+                "reference": "1d666f255e9ae20a1e93823d87069df359c38f69",
                 "shasum": ""
             },
             "require": {
@@ -219,9 +219,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.10"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.12"
             },
-            "time": "2023-11-06T15:36:17+00:00"
+            "time": "2023-11-22T07:56:17+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -10331,5 +10331,5 @@
     "platform-overrides": {
         "php": "7.3"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.2.0"
 }

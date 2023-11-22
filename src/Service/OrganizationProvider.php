@@ -40,7 +40,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizationById(string $identifier, array $options = []): Organization
     {
-        $this->eventDispatcher->onNewOperation($options);
+        $options = $this->handleNewRequest($options);
 
         $organizationUnitData = null;
         try {
@@ -66,12 +66,7 @@ class OrganizationProvider implements OrganizationProviderInterface
      */
     public function getOrganizations(int $currentPageNumber, int $maxNumItemsPerPage, array $options = []): array
     {
-        $this->eventDispatcher->onNewOperation($options);
-
-        $preEvent = new OrganizationPreEvent($options);
-        $this->eventDispatcher->dispatch($preEvent);
-        $options = $preEvent->getOptions();
-
+        $options = $this->handleNewRequest($options);
         $this->addFilterOptions($options);
 
         $organizations = [];
@@ -102,8 +97,18 @@ class OrganizationProvider implements OrganizationProviderInterface
     {
         if (($searchParameter = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) && $searchParameter !== '') {
             unset($options[Organization::SEARCH_PARAMETER_NAME]);
-            ResourceApi::addFilter($options, OrganizationUnitData::NAME_ATTRIBUTE, Filters::CONTAINS_CI_OPERATOR, $searchParameter, Filters::LOGICAL_OR_OPERATOR);
+            ResourceApi::addFilter($options, OrganizationUnitData::NAME_ATTRIBUTE, Filters::CONTAINS_CI_OPERATOR, $searchParameter);
         }
+    }
+
+    private function handleNewRequest(array $options): array
+    {
+        $this->eventDispatcher->onNewOperation($options);
+
+        $preEvent = new OrganizationPreEvent($options);
+        $this->eventDispatcher->dispatch($preEvent);
+
+        return $preEvent->getOptions();
     }
 
     /**
