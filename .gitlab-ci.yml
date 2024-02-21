@@ -21,12 +21,6 @@ stages:
     - composer install
     - composer test
 
-test-php7.3:
-  stage: test
-  variables:
-    PHP: "php7.3"
-  <<: *test_defaults
-
 test-php7.4:
   stage: test
   variables:
