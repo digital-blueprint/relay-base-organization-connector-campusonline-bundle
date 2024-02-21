@@ -161,24 +161,24 @@ class OrganizationTest extends ApiTestCase
         $this->assertSame('6351', $organizations[2]->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
     }
 
-//    public function testGetOrganizationsLocalQuery()
-//    {
-//        $this->mockResponses([
-//            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
-//        ]);
-//
-//        $filters = [];
-//        $filters[LocalData::INCLUDE_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME;
-//        $filters[LocalData::QUERY_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME.':graz';
-//        $options = [];
-//        LocalData::addOptions($options, $filters);
-//
-//        $organizations = $this->organizationProvider->getOrganizations(1, 10, $options);
-//        $this->assertCount(1, $organizations);
-//
-//        $this->assertSame('2391', $organizations[0]->getIdentifier());
-//        $this->assertSame('Graz', $organizations[0]->getLocalDataValue(self::ADDRESS_LOCALITY_ATTRIBUTE_NAME));
-//    }
+    //    public function testGetOrganizationsLocalQuery()
+    //    {
+    //        $this->mockResponses([
+    //            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
+    //        ]);
+    //
+    //        $filters = [];
+    //        $filters[LocalData::INCLUDE_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME;
+    //        $filters[LocalData::QUERY_PARAMETER_NAME] = self::ADDRESS_LOCALITY_ATTRIBUTE_NAME.':graz';
+    //        $options = [];
+    //        LocalData::addOptions($options, $filters);
+    //
+    //        $organizations = $this->organizationProvider->getOrganizations(1, 10, $options);
+    //        $this->assertCount(1, $organizations);
+    //
+    //        $this->assertSame('2391', $organizations[0]->getIdentifier());
+    //        $this->assertSame('Graz', $organizations[0]->getLocalDataValue(self::ADDRESS_LOCALITY_ATTRIBUTE_NAME));
+    //    }
 
     public function testGetOrganizationsPartialPagination()
     {
