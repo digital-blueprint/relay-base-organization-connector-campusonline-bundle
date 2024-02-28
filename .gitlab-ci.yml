@@ -21,18 +21,6 @@ stages:
     - composer install
     - composer test
 
-test-php7.4:
-  stage: test
-  variables:
-    PHP: "php7.4"
-  <<: *test_defaults
-
-test-php8.0:
-  stage: test
-  variables:
-    PHP: "php8.0"
-  <<: *test_defaults
-
 test-php8.1:
   stage: test
   variables:
@@ -54,7 +42,7 @@ test-php8.3:
 linting:
   stage: test
   script:
-    - sudo update-alternatives --set php /usr/bin/php7.4
+    - sudo update-alternatives --set php /usr/bin/php8.1
     - composer install
     - result=0
     - composer run cs || result=1
