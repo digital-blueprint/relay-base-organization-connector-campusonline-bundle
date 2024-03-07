@@ -21,6 +21,19 @@ stages:
     - composer install
     - composer test
 
+.test_lowest: &test_lowest
+  script:
+    - sudo update-alternatives --set php "/usr/bin/${PHP}"
+    - composer validate
+    - composer update --prefer-lowest --prefer-dist --prefer-stable --no-interaction
+    - composer test
+
+test-php8.1-lowest:
+  stage: test
+  variables:
+    PHP: "php8.1"
+  <<: *test_lowest
+
 test-php8.1:
   stage: test
   variables:

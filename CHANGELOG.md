@@ -1,3 +1,7 @@
+# v0.1.18
+
+* Add support for Symfony 6
+
 # v0.1.17
 
 * Drop support for PHP 7.4/8.0
