@@ -19,11 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationProvider implements OrganizationProviderInterface
 {
-    /** @var OrganizationApi */
-    private $orgApi;
-
-    /** @var LocalDataEventDispatcher */
-    private $eventDispatcher;
+    private OrganizationApi $orgApi;
+    private LocalDataEventDispatcher $eventDispatcher;
 
     public function __construct(OrganizationApi $orgApi, EventDispatcherInterface $eventDispatcher)
     {
@@ -112,7 +109,7 @@ class OrganizationProvider implements OrganizationProviderInterface
     }
 
     /**
-     * NOTE: Comfortonline returns '401 unauthorized' for some ressources that are not found. So we can't
+     * NOTE: Campusonline returns '401 unauthorized' for some resources that are not found. So we can't
      * safely return '404' in all cases because '401' is also returned by CO if e.g. the token is not valid.
      *
      * @throws ApiError
@@ -123,10 +120,8 @@ class OrganizationProvider implements OrganizationProviderInterface
             switch ($e->getCode()) {
                 case Response::HTTP_NOT_FOUND:
                     throw new ApiError(Response::HTTP_NOT_FOUND, sprintf("Id '%s' could not be found!", $identifier));
-                    break;
                 case Response::HTTP_UNAUTHORIZED:
-                    throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, sprintf("Id '%s' could not be found or access denied!", $identifier));
-                    break;
+                    throw new ApiError(Response::HTTP_UNAUTHORIZED, sprintf("Id '%s' could not be found or access denied!", $identifier));
                 default:
                     break;
             }
