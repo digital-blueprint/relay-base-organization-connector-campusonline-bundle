@@ -15,6 +15,6 @@ class OrganizationEventSubscriber extends AbstractLocalDataEventSubscriber
         return [
             OrganizationPreEvent::class,
             OrganizationPostEvent::class,
-            ];
+        ];
     }
 }
