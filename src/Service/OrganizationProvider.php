@@ -42,8 +42,8 @@ class OrganizationProvider implements OrganizationProviderInterface
         $organizationUnitData = null;
         try {
             $organizationUnitData = $this->orgApi->getOrganizationById($identifier, $options);
-        } catch (ApiException $e) {
-            self::dispatchException($e, $identifier);
+        } catch (ApiException $apiException) {
+            self::dispatchException($apiException, $identifier);
         }
 
         return self::createOrganizationFromOrganizationUnitData($organizationUnitData);
@@ -71,8 +71,8 @@ class OrganizationProvider implements OrganizationProviderInterface
             foreach ($this->orgApi->getOrganizations($currentPageNumber, $maxNumItemsPerPage, $options) as $organizationUnitData) {
                 $organizations[] = self::createOrganizationFromOrganizationUnitData($organizationUnitData);
             }
-        } catch (ApiException $e) {
-            throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        } catch (ApiException $apiException) {
+            self::dispatchException($apiException);
         }
 
         return $organizations;
@@ -90,7 +90,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         return $organization;
     }
 
-    private function addFilterOptions(array &$options)
+    private function addFilterOptions(array &$options): void
     {
         if (($searchParameter = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) && $searchParameter !== '') {
             unset($options[Organization::SEARCH_PARAMETER_NAME]);
@@ -113,19 +113,24 @@ class OrganizationProvider implements OrganizationProviderInterface
      * safely return '404' in all cases because '401' is also returned by CO if e.g. the token is not valid.
      *
      * @throws ApiError
+     * @throws ApiException
      */
-    private static function dispatchException(ApiException $e, string $identifier)
+    private static function dispatchException(ApiException $apiException, ?string $identifier = null): void
     {
-        if ($e->isHttpResponseCode()) {
-            switch ($e->getCode()) {
+        if ($apiException->isHttpResponseCode()) {
+            switch ($apiException->getCode()) {
                 case Response::HTTP_NOT_FOUND:
-                    throw new ApiError(Response::HTTP_NOT_FOUND, sprintf("Id '%s' could not be found!", $identifier));
+                    if ($identifier !== null) {
+                        throw new ApiError(Response::HTTP_NOT_FOUND, sprintf("Id '%s' could not be found!", $identifier));
+                    }
+                    break;
                 case Response::HTTP_UNAUTHORIZED:
                     throw new ApiError(Response::HTTP_UNAUTHORIZED, sprintf("Id '%s' could not be found or access denied!", $identifier));
-                default:
-                    break;
+            }
+            if ($apiException->getCode() >= 500) {
+                throw new ApiError(Response::HTTP_BAD_GATEWAY, 'failed to get organizations from Campusonline');
             }
         }
-        throw new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
+        throw $apiException;
     }
 }

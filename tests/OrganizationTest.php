@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
@@ -117,12 +118,8 @@ class OrganizationTest extends ApiTestCase
             new Response(403, [], 'error'),
         ]);
 
-        try {
-            $this->organizationProvider->getOrganizationById('2234');
-        } catch (\Throwable $exception) {
-            $this->assertInstanceOf(ApiError::class, $exception);
-            $this->assertEquals(500, $exception->getStatusCode());
-        }
+        $this->expectException(ApiException::class);
+        $this->organizationProvider->getOrganizationById('2234');
     }
 
     public function testGetOrganizations()
