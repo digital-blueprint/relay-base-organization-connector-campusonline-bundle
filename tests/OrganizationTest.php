@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi;
@@ -14,10 +13,11 @@ use Dbp\Relay\CoreBundle\Rest\Options;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class OrganizationTest extends ApiTestCase
+class OrganizationTest extends KernelTestCase
 {
     private const ORGANIZATION_CODE_ATTRIBUTE_NAME = 'code';
     private const ADDRESS_LOCALITY_ATTRIBUTE_NAME = 'addressLocality';
@@ -30,7 +30,7 @@ class OrganizationTest extends ApiTestCase
 
     public function testContainer()
     {
-        $this->assertNotNull(ApiTestCase::createClient());
+        $this->assertNotNull($this->getContainer());
     }
 
     private static function createConfig(): array
