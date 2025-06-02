@@ -10,14 +10,10 @@ use Dbp\Relay\CoreBundle\LocalData\LocalDataPostEvent;
 
 class OrganizationPostEvent extends LocalDataPostEvent
 {
-    /** @var OrganizationApi */
-    private $organizationApi;
-
-    public function __construct(LocalDataAwareInterface $entity, array $sourceData, OrganizationApi $organizationApi)
+    public function __construct(LocalDataAwareInterface $entity, array $sourceData,
+        private readonly OrganizationApi $organizationApi)
     {
         parent::__construct($entity, $sourceData);
-
-        $this->organizationApi = $organizationApi;
     }
 
     public function getOrganizationApi(): OrganizationApi

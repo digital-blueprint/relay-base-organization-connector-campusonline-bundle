@@ -19,12 +19,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationProvider implements OrganizationProviderInterface
 {
-    private OrganizationApi $orgApi;
     private LocalDataEventDispatcher $eventDispatcher;
 
-    public function __construct(OrganizationApi $orgApi, EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        private readonly OrganizationApi $organizationApi,
+        EventDispatcherInterface $eventDispatcher)
     {
-        $this->orgApi = $orgApi;
         $this->eventDispatcher = new LocalDataEventDispatcher(Organization::class, $eventDispatcher);
     }
 
@@ -41,7 +41,7 @@ class OrganizationProvider implements OrganizationProviderInterface
 
         $organizationUnitData = null;
         try {
-            $organizationUnitData = $this->orgApi->getOrganizationById($identifier, $options);
+            $organizationUnitData = $this->organizationApi->getOrganizationById($identifier, $options);
         } catch (ApiException $apiException) {
             self::dispatchException($apiException, $identifier);
         }
@@ -68,7 +68,7 @@ class OrganizationProvider implements OrganizationProviderInterface
 
         $organizations = [];
         try {
-            foreach ($this->orgApi->getOrganizations($currentPageNumber, $maxNumItemsPerPage, $options) as $organizationUnitData) {
+            foreach ($this->organizationApi->getOrganizations($currentPageNumber, $maxNumItemsPerPage, $options) as $organizationUnitData) {
                 $organizations[] = self::createOrganizationFromOrganizationUnitData($organizationUnitData);
             }
         } catch (ApiException $apiException) {
@@ -84,7 +84,7 @@ class OrganizationProvider implements OrganizationProviderInterface
         $organization->setIdentifier($organizationUnitData->getIdentifier());
         $organization->setName($organizationUnitData->getName());
 
-        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData(), $this->orgApi);
+        $postEvent = new OrganizationPostEvent($organization, $organizationUnitData->getData(), $this->organizationApi);
         $this->eventDispatcher->dispatch($postEvent);
 
         return $organization;

@@ -9,14 +9,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class RebuildingOrganizationCacheEvent extends Event
 {
-    /**
-     * @var OrganizationApi
-     */
-    private $organizationApi;
-
-    public function __construct(OrganizationApi $organizationApi)
+    public function __construct(
+        private readonly OrganizationApi $organizationApi)
     {
-        $this->organizationApi = $organizationApi;
     }
 
     public function getOrganizationApi(): OrganizationApi

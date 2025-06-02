@@ -20,45 +20,30 @@ class OrganizationApi implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /** @var Api */
-    private $api;
+    private ?Api $api = null;
+    private ?OrganizationUnitApi $orgUnitApi = null;
+    private array $config = [];
+    private ?object $clientHandler = null;
+    private ?CacheItemPoolInterface $cachePool = null;
+    private int $cacheTTL = 0;
 
-    /** @var OrganizationUnitApi */
-    private $orgUnitApi;
-
-    /** @var array */
-    private $config;
-
-    /** @var object|null */
-    private $clientHandler;
-
-    /** @var CacheItemPoolInterface|null */
-    private $cachePool;
-
-    /** @var int */
-    private $cacheTTL;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(
+        private readonly EventDispatcherInterface $eventDispatcher)
     {
-        $this->config = [];
-        $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function setCache(?CacheItemPoolInterface $cachePool, int $ttl)
+    public function setCache(?CacheItemPoolInterface $cachePool, int $ttl): void
     {
         $this->cachePool = $cachePool;
         $this->cacheTTL = $ttl;
     }
 
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
 
-    public function setClientHandler(?object $handler)
+    public function setClientHandler(?object $handler): void
     {
         $this->clientHandler = $handler;
         if ($this->api !== null) {
@@ -77,7 +62,7 @@ class OrganizationApi implements LoggerAwareInterface
     /**
      * @throws ApiException
      */
-    public function checkConnection()
+    public function checkConnection(): void
     {
         $this->getOrganizationUnitApi()->checkConnection();
     }
@@ -129,12 +114,12 @@ class OrganizationApi implements LoggerAwareInterface
         return $this->orgUnitApi;
     }
 
-    private function onRebuildingResourceCacheCallback()
+    private function onRebuildingResourceCacheCallback(): void
     {
         $this->eventDispatcher->dispatch(new RebuildingOrganizationCacheEvent($this));
     }
 
-    public function setIsOrganizationCallback($isOrganizationCallback)
+    public function setIsOrganizationCallback($isOrganizationCallback): void
     {
         $this->getOrganizationUnitApi()->setIsResourceNodeCallback($isOrganizationCallback);
     }
