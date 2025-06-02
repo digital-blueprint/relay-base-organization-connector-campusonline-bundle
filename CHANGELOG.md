@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.22
+
+- Modernize code
+- Increase cache ttl to a bit more than one day
+
 ## v0.1.21
 
 * Remove api-platform dependency
