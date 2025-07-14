@@ -23,14 +23,15 @@ class LegacyOrganizationApi implements OrganizationApiInterface
     private OrganizationUnitApi $organizationUnitApi;
 
     public function __construct(private readonly EventDispatcherInterface $eventDispatcher,
-        array $config, ?CacheItemPoolInterface $cachePool = null, int $cacheTTL = 0, ?LoggerInterface $logger = null)
+        array $config, ?CacheItemPoolInterface $cachePool = null, int $cacheTTL = 0,
+        ?object $clientHandler = null, ?LoggerInterface $logger = null)
     {
         $baseUrl = $config['api_url'] ?? '';
         $accessToken = $config['api_token'] ?? '';
         $rootOrgUnitId = $config['org_root_id'] ?? '';
 
         $this->api = new Api($baseUrl, $accessToken, $rootOrgUnitId,
-            $logger, $cachePool, $cacheTTL);
+            $logger, $cachePool, $cacheTTL, $clientHandler);
         $this->organizationUnitApi = $this->api->OrganizationUnit();
         $this->organizationUnitApi->setOnRebuildingResourceCacheCallback(function () {
             $this->onRebuildingResourceCacheCallback();
@@ -90,8 +91,8 @@ class LegacyOrganizationApi implements OrganizationApiInterface
         $this->eventDispatcher->dispatch(new RebuildingOrganizationCacheEvent($this));
     }
 
-    public function setIsOrganizationCallback(?callable $isOrganizationIsOrganizationCallback): void
+    public function setIsOrganizationCallback($isOrganizationCallback): void
     {
-        $this->organizationUnitApi->setIsResourceNodeCallback($isOrganizationIsOrganizationCallback);
+        $this->organizationUnitApi->setIsResourceNodeCallback($isOrganizationCallback);
     }
 }

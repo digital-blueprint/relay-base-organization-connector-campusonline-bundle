@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection;
 
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Cron\CacheRefreshCronJob;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\LegacyOrganizationApi;
 use Dbp\Relay\CoreBundle\Doctrine\DoctrineConfiguration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,14 +25,11 @@ class DbpRelayBaseOrganizationConnectorCampusonlineExtension extends Configurabl
         );
         $loader->load('services.yaml');
 
-        $container->getDefinition(OrganizationProvider::class)
-            ->addMethodCall('setConfig', [$mergedConfig]);
+        $courseApi = $container->getDefinition(LegacyOrganizationApi::class);
+        $courseApi->addMethodCall('setConfig', [$mergedConfig[Configuration::CAMPUS_ONLINE_NODE] ?? []]);
 
-        $container->getDefinition(OrganizationEventSubscriber::class)
-            ->addMethodCall('setConfig', [$mergedConfig]);
-
-        $container->getDefinition(CacheRefreshCronJob::class)
-            ->addMethodCall('setConfig', [$mergedConfig]);
+        $courseApi = $container->getDefinition(OrganizationEventSubscriber::class);
+        $courseApi->addMethodCall('setConfig', [$mergedConfig]);
     }
 
     public function prepend(ContainerBuilder $container)
