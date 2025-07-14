@@ -6,7 +6,7 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
 use Dbp\CampusonlineApi\LegacyWebService\ApiException;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\LegacyOrganizationApi;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\Rest\Options;
@@ -22,7 +22,7 @@ class OrganizationTest extends KernelTestCase
     private const ORGANIZATION_CODE_ATTRIBUTE_NAME = 'code';
     private const ADDRESS_LOCALITY_ATTRIBUTE_NAME = 'addressLocality';
 
-    private ?OrganizationApi $organizationApi = null;
+    private ?LegacyOrganizationApi $organizationApi = null;
     private ?OrganizationProvider $organizationProvider = null;
 
     public function testContainer()
@@ -57,7 +57,7 @@ class OrganizationTest extends KernelTestCase
         $localDataEventSubscriber = new OrganizationEventSubscriber();
         $localDataEventSubscriber->setConfig(self::createConfig());
         $eventDispatcher->addSubscriber($localDataEventSubscriber);
-        $this->organizationApi = new OrganizationApi(new EventDispatcher());
+        $this->organizationApi = new LegacyOrganizationApi(new EventDispatcher());
         $this->organizationApi->setCache(new ArrayAdapter(3600, true, 3600, 356), 3600);
         $this->organizationProvider = new OrganizationProvider($this->organizationApi, $eventDispatcher);
         $this->mockResponses([]);

@@ -11,7 +11,7 @@ use Dbp\Relay\CoreBundle\HealthCheck\CheckResult;
 readonly class HealthCheck implements CheckInterface
 {
     public function __construct(
-        private OrganizationApi $organizationApi)
+        private LegacyOrganizationApi $organizationApi)
     {
     }
 
