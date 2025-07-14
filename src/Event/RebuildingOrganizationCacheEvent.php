@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event;
 
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Apis\LegacyOrganizationApi;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Apis\OrganizationApiInterface;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\LegacyOrganizationApi;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class RebuildingOrganizationCacheEvent extends Event
 {
     public function __construct(
-        private readonly OrganizationApiInterface $organizationApi)
+        private readonly LegacyOrganizationApi $organizationApi)
     {
     }
 
-    public function getOrganizationApi(): OrganizationApiInterface
+    public function getOrganizationApi(): LegacyOrganizationApi
     {
         return $this->organizationApi;
     }

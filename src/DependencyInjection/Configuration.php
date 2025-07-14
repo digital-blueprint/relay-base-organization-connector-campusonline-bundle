@@ -19,7 +19,6 @@ class Configuration implements ConfigurationInterface
     public const CLIENT_ID_NODE = 'client_id';
     public const CLIENT_SECRET_NODE = 'client_secret';
     public const CACHE_REFRESH_INTERVAL_NODE = 'cache_refresh_interval';
-
     private const DATABASE_URL_DEFAULT = 'sqlite:///%kernel.project_dir%/var/organizations_cache.db';
 
     public function getConfigTreeBuilder(): TreeBuilder
