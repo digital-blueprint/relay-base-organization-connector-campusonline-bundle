@@ -8,7 +8,11 @@
         "ext-json": "*",
         "dbp/campusonline-api": "^0.3.13",
         "dbp/relay-base-organization-bundle": "^0.2.11",
-        "dbp/relay-core-bundle": "^0.1.186",
+        "dbp/relay-core-bundle": "^0.1.217",
+        "doctrine/dbal": "^4.2",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/migrations": "^3.9",
+        "doctrine/orm": "^3.4",
         "symfony/framework-bundle": "^6.4",
         "symfony/config": "^6.4",
         "symfony/event-dispatcher": "^6.4",
@@ -22,12 +26,19 @@
         "friendsofphp/php-cs-fixer": "^3.50",
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",
+        "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^10.1",
         "symfony/browser-kit": "^6.4",
         "symfony/http-client": "^6.4",
         "symfony/monolog-bundle": "^3.10",
         "symfony/phpunit-bridge": "^7.0"
-    },    "autoload": {
+    },
+    "conflict": {
+        "symfony/doctrine-bridge": "<6.4.7",
+        "symfony/web-link": "<6.4.7",
+        "doctrine/doctrine-bundle": "<2.13.1"
+    },
+    "autoload": {
         "psr-4": {
             "Dbp\\Relay\\BaseOrganizationConnectorCampusonlineBundle\\": "src/"
         }
