@@ -978,26 +978,26 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "v0.3.24",
+            "version": "v0.3.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "e47ed081e7345c3e092981045b9677e072f52a55"
+                "reference": "94cf3c9777bba2393d3ad0b5eef210fdef14f45d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/e47ed081e7345c3e092981045b9677e072f52a55",
-                "reference": "e47ed081e7345c3e092981045b9677e072f52a55",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/94cf3c9777bba2393d3ad0b5eef210fdef14f45d",
+                "reference": "94cf3c9777bba2393d3ad0b5eef210fdef14f45d",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-simplexml": "*",
                 "guzzlehttp/guzzle": "^7.3",
-                "kevinrob/guzzle-cache-middleware": "^3.5 || ^4.0 || ^5.0 || ^6.0",
+                "kevinrob/guzzle-cache-middleware": "^5.0 || ^6.0 || ^7.0",
                 "league/uri": "^6.5 || ^7.4.0",
                 "league/uri-interfaces": "^2.3 || ^7.4",
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "psr/cache": "^1.0.1 || ^2.0.0 || ^3.0.0",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/log": "^1.1.4 || ^2.0 || ^3.0"
@@ -1022,9 +1022,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.24"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.25"
             },
-            "time": "2025-03-10T09:11:40+00:00"
+            "time": "2025-11-24T13:12:38+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -1085,16 +1085,16 @@
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.224",
+            "version": "v0.1.225",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-core-bundle.git",
-                "reference": "c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a"
+                "reference": "467538420d876f9608cfef8334184ac1a309db21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a",
-                "reference": "c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/467538420d876f9608cfef8334184ac1a309db21",
+                "reference": "467538420d876f9608cfef8334184ac1a309db21",
                 "shasum": ""
             },
             "require": {
@@ -1191,9 +1191,9 @@
             "description": "The core bundle of the Relay API gateway",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-core-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.224"
+                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.225"
             },
-            "time": "2025-11-11T13:09:06+00:00"
+            "time": "2025-11-26T15:00:33+00:00"
         },
         {
             "name": "doctrine/collections",
