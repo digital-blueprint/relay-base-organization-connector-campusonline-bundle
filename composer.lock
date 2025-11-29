@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a63c9b7d3c043908d7ceb0428e660c81",
+    "content-hash": "be6239dbc844113f304505d9a454d5f0",
     "packages": [
         {
             "name": "api-platform/documentation",
@@ -978,16 +978,16 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "dev-main",
+            "version": "v0.3.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "fca19b26f781d4119dca4b7f95577f22d9ab2283"
+                "reference": "94cf3c9777bba2393d3ad0b5eef210fdef14f45d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/fca19b26f781d4119dca4b7f95577f22d9ab2283",
-                "reference": "fca19b26f781d4119dca4b7f95577f22d9ab2283",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/94cf3c9777bba2393d3ad0b5eef210fdef14f45d",
+                "reference": "94cf3c9777bba2393d3ad0b5eef210fdef14f45d",
                 "shasum": ""
             },
             "require": {
@@ -1010,7 +1010,6 @@
                 "symfony/cache": "^5.4 || ^6.4.3",
                 "symfony/phpunit-bridge": "^7.0.7"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1023,9 +1022,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/main"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.25"
             },
-            "time": "2026-01-08T09:13:52+00:00"
+            "time": "2025-11-24T13:12:38+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -1086,16 +1085,16 @@
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.224",
+            "version": "v0.1.225",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-core-bundle.git",
-                "reference": "c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a"
+                "reference": "467538420d876f9608cfef8334184ac1a309db21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a",
-                "reference": "c8f70d78c7566a7d7c5be8ad144eb117e9d30c8a",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/467538420d876f9608cfef8334184ac1a309db21",
+                "reference": "467538420d876f9608cfef8334184ac1a309db21",
                 "shasum": ""
             },
             "require": {
@@ -1192,9 +1191,9 @@
             "description": "The core bundle of the Relay API gateway",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-core-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.224"
+                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.225"
             },
-            "time": "2025-11-11T13:09:06+00:00"
+            "time": "2025-11-26T15:00:33+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -9231,77 +9230,6 @@
             "time": "2025-07-13T11:31:46+00:00"
         },
         {
-            "name": "phpstan/phpstan-symfony",
-            "version": "2.0.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "5005288e07583546ea00b52de4a9ac412eb869d7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/5005288e07583546ea00b52de4a9ac412eb869d7",
-                "reference": "5005288e07583546ea00b52de4a9ac412eb869d7",
-                "shasum": ""
-            },
-            "require": {
-                "ext-simplexml": "*",
-                "php": "^7.4 || ^8.0",
-                "phpstan/phpstan": "^2.1.13"
-            },
-            "conflict": {
-                "symfony/framework-bundle": "<3.0"
-            },
-            "require-dev": {
-                "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpstan/phpstan-phpunit": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^9.6",
-                "psr/container": "1.1.2",
-                "symfony/config": "^5.4 || ^6.1",
-                "symfony/console": "^5.4 || ^6.1",
-                "symfony/dependency-injection": "^5.4 || ^6.1",
-                "symfony/form": "^5.4 || ^6.1",
-                "symfony/framework-bundle": "^5.4 || ^6.1",
-                "symfony/http-foundation": "^5.4 || ^6.1",
-                "symfony/messenger": "^5.4",
-                "symfony/polyfill-php80": "^1.24",
-                "symfony/serializer": "^5.4",
-                "symfony/service-contracts": "^2.2.0"
-            },
-            "type": "phpstan-extension",
-            "extra": {
-                "phpstan": {
-                    "includes": [
-                        "extension.neon",
-                        "rules.neon"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PHPStan\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Lukáš Unger",
-                    "email": "looky.msc@gmail.com",
-                    "homepage": "https://lookyman.net"
-                }
-            ],
-            "description": "Symfony Framework extensions and rules for PHPStan",
-            "support": {
-                "issues": "https://github.com/phpstan/phpstan-symfony/issues",
-                "source": "https://github.com/phpstan/phpstan-symfony/tree/2.0.6"
-            },
-            "time": "2025-05-14T07:00:05+00:00"
-        },
-        {
             "name": "phpunit/php-code-coverage",
             "version": "10.1.16",
             "source": {
@@ -11826,18 +11754,9 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "dbp/campusonline-api",
-            "version": "dev-main",
-            "alias": "0.3.28",
-            "alias_normalized": "0.3.28.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "dbp/campusonline-api": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
