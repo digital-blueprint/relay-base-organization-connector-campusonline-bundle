@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.23
+
+- Add support for Symfony 7
+
 ## v0.1.22
 
 - Modernize code
