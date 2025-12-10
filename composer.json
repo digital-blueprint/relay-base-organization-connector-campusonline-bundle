@@ -9,13 +9,13 @@
         "dbp/campusonline-api": "^0.3.13",
         "dbp/relay-base-organization-bundle": "^0.2.11",
         "dbp/relay-core-bundle": "^0.1.186",
-        "symfony/framework-bundle": "^6.4",
-        "symfony/config": "^6.4",
-        "symfony/event-dispatcher": "^6.4",
-        "symfony/dependency-injection": "^6.4",
+        "symfony/framework-bundle": "^6.4 || ^7.4",
+        "symfony/config": "^6.4 || ^7.4",
+        "symfony/event-dispatcher": "^6.4 || ^7.4",
+        "symfony/dependency-injection": "^6.4 || ^7.4",
         "symfony/event-dispatcher-contracts": "^2.5 || ^3.4",
-        "symfony/http-foundation": "^6.4",
-        "symfony/http-kernel": "^6.4",
+        "symfony/http-foundation": "^6.4 || ^7.4",
+        "symfony/http-kernel": "^6.4 || ^7.4",
         "psr/log": "^1.1.4 || ^2.0.0 || ^3.0.0"
     },
     "require-dev": {
@@ -23,11 +23,13 @@
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",
         "phpunit/phpunit": "^11.0",
-        "symfony/browser-kit": "^6.4",
-        "symfony/http-client": "^6.4",
-        "symfony/monolog-bundle": "^3.10",
-        "symfony/phpunit-bridge": "^7.0"
-    },    "autoload": {
+        "symfony/browser-kit": "^6.4 || ^7.4",
+        "symfony/http-client": "^6.4 || ^7.4",
+        "symfony/monolog-bundle": "^3.10 || ^4.0",
+        "symfony/phpunit-bridge": "^7.0",
+        "symfony/runtime": "^6.4 || ^7.4"
+    },
+    "autoload": { 
         "psr-4": {
             "Dbp\\Relay\\BaseOrganizationConnectorCampusonlineBundle\\": "src/"
         }
@@ -43,7 +45,8 @@
             "php": "8.2"
         },
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "symfony/runtime": true
         }
     },
     "scripts": {
