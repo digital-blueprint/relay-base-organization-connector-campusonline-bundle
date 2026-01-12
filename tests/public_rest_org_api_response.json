@@ -1,0 +1,166 @@
+{
+  "items": [
+    {
+      "code": "3000",
+      "contactInfo": [
+        {
+          "additionalInformation": {},
+          "address": {
+            "city": "Graz City",
+            "country": "AT",
+            "postalCode": "8010",
+            "street": "Inffeldgasse 23/I"
+          },
+          "email": "some@email.com",
+          "fax": "01234 / 56789-0",
+          "hasOwnAddress": "J",
+          "sort": 1,
+          "tel": "01234 / 56789-1",
+          "webLinks": {
+            "locationHref": "https://location.com/pOrgNr=21",
+            "selfHref": "https://self.com/pOrgNr=21",
+            "webPageHref": "https://web.com/pOrgNr=21"
+          }
+        }
+      ],
+      "groupKey": "OE",
+      "name": {
+        "value": {
+          "de": "Fakultät für Maschinenbau und Wirtschaftswissenschaften",
+          "en": "Faculty of Mechanical Engineering and Economic Sciences"
+        }
+      },
+      "parentUid": "37",
+      "path": {
+        "value": {
+          "de": "Technische Universität Graz/Fakultäten/Fakultät für Maschinenbau und Wirtschaftswissenschaften",
+          "en": "Graz University of Technology/Faculties/Faculty of Mechanical Engineering and Economic Sciences"
+        }
+      },
+      "shortDescription": {
+        "value": {
+          "de": "",
+          "en": ""
+        }
+      },
+      "type": {
+        "name": {
+          "value": {
+            "de": "Fakultät",
+            "en": "Faculty"
+          }
+        },
+        "uid": "680"
+      },
+      "uid": "21",
+      "validFrom": "1996-10-25"
+    },
+    {
+      "code": "3510",
+      "contactInfo": [
+        {
+          "additionalInformation": {
+            "libraryInformation": "Mo.-Do. 14.30-16.00 Uhr",
+            "secretariatInformation": "8-12 Uhr"
+          },
+          "address": {
+            "city": "Graz",
+            "country": "AT",
+            "postalCode": "8010",
+            "street": "Inffeldgasse 25/C/II"
+          },
+          "email": "another@email.com",
+          "fax": "",
+          "hasOwnAddress": "J",
+          "sort": 1,
+          "webLinks": {
+            "locationHref": "https://location.com/pOrgNr=22",
+            "selfHref": "https://self.com/pOrgNr=22"
+          }
+        }
+      ],
+      "groupKey": "OE",
+      "name": {
+        "value": {
+          "de": "Institut für Verfahrenstechnik",
+          "en": "Institute of Chemical and Process Engineering"
+        }
+      },
+      "parentUid": "21",
+      "path": {
+        "value": {
+          "de": "",
+          "en": ""
+        }
+      },
+      "type": {
+        "name": {
+          "value": {
+            "de": "Institut",
+            "en": "Institute"
+          }
+        },
+        "uid": "691"
+      },
+      "uid": "22",
+      "validFrom": "1996-10-25",
+      "validTo": "1998-10-06"
+    },
+    {
+      "code": "90000",
+      "contactInfo": [
+        {
+          "additionalInformation": {},
+          "address": {
+            "city": "Graz",
+            "country": "AT",
+            "postalCode": "8010",
+            "street": "Rechbauerstraße 12"
+          },
+          "email": "info@email.com",
+          "fax": "01234 56789-9",
+          "hasOwnAddress": "J",
+          "sort": 1,
+          "tel": "01234 56789-8",
+          "webLinks": {
+            "locationHref": "https://location.com/pOrgNr=37",
+            "selfHref": "https://self.com/pOrgNr=37",
+            "webPageHref": "http://web.com/pOrgNr=37"
+          }
+        }
+      ],
+      "groupKey": "OE",
+      "name": {
+        "value": {
+          "de": "Technische Universität Graz",
+          "en": "Graz University of Technology"
+        }
+      },
+      "path": {
+        "value": {
+          "de": "Technische Universität Graz",
+          "en": "Graz University of Technology"
+        }
+      },
+      "shortDescription": {
+        "value": {
+          "de": "",
+          "en": ""
+        }
+      },
+      "type": {
+        "name": {
+          "value": {
+            "de": "Technische Universität",
+            "en": "University of Technology"
+          }
+        },
+        "uid": "672"
+      },
+      "uid": "37",
+      "validFrom": "1996-10-25"
+    }
+  ],
+  "limit": 3,
+  "nextCursor": null
+}

@@ -2,14 +2,20 @@ services:
   Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider:
     autowire: true
     autoconfigure: true
-
-  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationApi:
-    autowire: true
-    autoconfigure: true
+    arguments:
+      $entityManager: '@doctrine.orm.dbp_relay_base_organization_connector_campusonline_bundle_entity_manager'
     calls:
-      - setCache: [ '@dbp.relay.base_organization_connector_campusonline.cache.campus_online', 87000 ]
+      - setCache: [ '@dbp.relay.base_organization_connector_campusonline.cache.campus_online', 87000 ] # one day
 
   Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\HealthCheck:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Cron\CacheRefreshCronJob:
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\MigratePostEventSubscriber:
     autowire: true
     autoconfigure: true
 
