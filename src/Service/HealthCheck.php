@@ -11,7 +11,7 @@ use Dbp\Relay\CoreBundle\HealthCheck\CheckResult;
 readonly class HealthCheck implements CheckInterface
 {
     public function __construct(
-        private LegacyOrganizationApi $organizationApi)
+        private OrganizationProvider $organizationProvider)
     {
     }
 
@@ -26,7 +26,7 @@ readonly class HealthCheck implements CheckInterface
 
         $result->set(CheckResult::STATUS_SUCCESS);
         try {
-            $this->organizationApi->checkConnection();
+            $this->organizationProvider->checkConnection();
         } catch (\Throwable $e) {
             $result->set(CheckResult::STATUS_FAILURE, $e->getMessage(), ['exception' => $e]);
         }
