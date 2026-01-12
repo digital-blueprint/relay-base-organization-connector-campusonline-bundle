@@ -28,7 +28,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     use LoggerAwareTrait;
 
     private ?OrganizationApiInterface $organizationApi = null;
-    private LocalDataEventDispatcher $eventDispatcher;
+    private LocalDataEventDispatcher $localDataEventDispatcher;
     private array $config = [];
     private ?object $clientHandler = null;
     private ?CacheItemPoolInterface $cachePool = null;
@@ -36,9 +36,17 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher)
+        private readonly EventDispatcherInterface $eventDispatcher)
     {
-        $this->eventDispatcher = new LocalDataEventDispatcher(Organization::class, $eventDispatcher);
+        $this->localDataEventDispatcher = new LocalDataEventDispatcher(Organization::class, $eventDispatcher);
+    }
+
+    /**
+     * @internal For testing purposes only
+     */
+    public function reset(): void
+    {
+        $this->organizationApi = null;
     }
 
     public function setCache(?CacheItemPoolInterface $cachePool, int $ttl): void
@@ -129,11 +137,14 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private function getOrganizationApi(): OrganizationApiInterface
     {
         if ($this->organizationApi === null) {
-            if ($this->config['legacy'] ?? true) {
+            if ($this->config[Configuration::LEGACY_NODE] ?? true) {
                 $this->organizationApi = new LegacyOrganizationApi($this->eventDispatcher,
-                    $this->config, $this->cachePool, $this->cacheTTL, $this->clientHandler, $this->logger);
+                    $this->config, $this->cachePool, $this->cacheTTL, $this->logger);
             } else {
-                $this->organizationApi = new PublicRestOrganizationApi($this->entityManager, $this->config, $this->clientHandler);
+                $this->organizationApi = new PublicRestOrganizationApi($this->entityManager, $this->config, $this->logger);
+            }
+            if ($this->clientHandler !== null) {
+                $this->organizationApi->setClientHandler($this->clientHandler);
             }
         }
 
@@ -143,18 +154,18 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private function postProcessOrganization(OrganizationAndExtraData $organizationAndExtraData): Organization
     {
         $postEvent = new OrganizationPostEvent(
-            $organizationAndExtraData->getOrganization(), $organizationAndExtraData->getExtraData(), $this);
-        $this->eventDispatcher->dispatch($postEvent);
+            $organizationAndExtraData->getOrganization(), $organizationAndExtraData->getExtraData(), $this->getOrganizationApi());
+        $this->localDataEventDispatcher->dispatch($postEvent);
 
         return $organizationAndExtraData->getOrganization();
     }
 
     private function handleNewRequest(array $options): array
     {
-        $this->eventDispatcher->onNewOperation($options);
+        $this->localDataEventDispatcher->onNewOperation($options);
 
         $preEvent = new OrganizationPreEvent($options);
-        $this->eventDispatcher->dispatch($preEvent);
+        $this->localDataEventDispatcher->dispatch($preEvent);
 
         return $preEvent->getOptions();
     }
@@ -169,14 +180,8 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private static function dispatchException(ApiException $apiException, ?string $identifier = null): ApiError
     {
         if ($apiException->isHttpResponseCode()) {
-            switch ($apiException->getCode()) {
-                case Response::HTTP_NOT_FOUND:
-                    if ($identifier !== null) {
-                        return new ApiError(Response::HTTP_NOT_FOUND, sprintf("Id '%s' could not be found!", $identifier));
-                    }
-                    break;
-                case Response::HTTP_UNAUTHORIZED:
-                    return new ApiError(Response::HTTP_UNAUTHORIZED, sprintf("Id '%s' could not be found or access denied!", $identifier));
+            if ($apiException->getCode() === Response::HTTP_NOT_FOUND && $identifier !== null) {
+                return new ApiError(Response::HTTP_NOT_FOUND, sprintf("Id '%s' could not be found!", $identifier));
             }
             if ($apiException->getCode() >= 500) {
                 return new ApiError(Response::HTTP_BAD_GATEWAY, 'failed to get organizations from Campusonline');

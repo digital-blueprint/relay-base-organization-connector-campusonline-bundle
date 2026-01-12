@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae91368856ce20ac70798b4fef485a9c",
+    "content-hash": "a63c9b7d3c043908d7ceb0428e660c81",
     "packages": [
         {
             "name": "api-platform/core",
@@ -224,26 +224,26 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "v0.3.24",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "e47ed081e7345c3e092981045b9677e072f52a55"
+                "reference": "fca19b26f781d4119dca4b7f95577f22d9ab2283"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/e47ed081e7345c3e092981045b9677e072f52a55",
-                "reference": "e47ed081e7345c3e092981045b9677e072f52a55",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/fca19b26f781d4119dca4b7f95577f22d9ab2283",
+                "reference": "fca19b26f781d4119dca4b7f95577f22d9ab2283",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-simplexml": "*",
                 "guzzlehttp/guzzle": "^7.3",
-                "kevinrob/guzzle-cache-middleware": "^3.5 || ^4.0 || ^5.0 || ^6.0",
+                "kevinrob/guzzle-cache-middleware": "^5.0 || ^6.0 || ^7.0",
                 "league/uri": "^6.5 || ^7.4.0",
                 "league/uri-interfaces": "^2.3 || ^7.4",
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "psr/cache": "^1.0.1 || ^2.0.0 || ^3.0.0",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/log": "^1.1.4 || ^2.0 || ^3.0"
@@ -256,6 +256,7 @@
                 "symfony/cache": "^5.4 || ^6.4.3",
                 "symfony/phpunit-bridge": "^7.0.7"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -268,9 +269,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.24"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/main"
             },
-            "time": "2025-03-10T09:11:40+00:00"
+            "time": "2026-01-08T09:13:52+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -11260,9 +11261,18 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "dbp/campusonline-api",
+            "version": "dev-main",
+            "alias": "0.3.28",
+            "alias_normalized": "0.3.28.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "dbp/campusonline-api": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

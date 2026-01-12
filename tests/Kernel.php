@@ -6,7 +6,10 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DbpRelayBaseOrganizationConnectorCampusonlineBundle;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\Configuration;
 use Dbp\Relay\CoreBundle\DbpRelayCoreBundle;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -29,6 +32,8 @@ class Kernel extends BaseKernel
         yield new TwigBundle();
         yield new NelmioCorsBundle();
         yield new MonologBundle();
+        yield new DoctrineBundle();
+        yield new DoctrineMigrationsBundle();
         yield new ApiPlatformBundle();
         yield new DbpRelayBaseOrganizationConnectorCampusonlineBundle();
         yield new DbpRelayCoreBundle();
@@ -48,6 +53,7 @@ class Kernel extends BaseKernel
         ]);
 
         $container->extension('dbp_relay_base_organization_connector_campusonline', [
+            Configuration::DATABASE_URL => 'sqlite:///:memory:',
         ]);
     }
 }
