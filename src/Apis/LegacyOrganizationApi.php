@@ -90,8 +90,8 @@ class LegacyOrganizationApi implements OrganizationApiInterface
         $this->eventDispatcher->dispatch(new RebuildingOrganizationCacheEvent($this));
     }
 
-    public function setIsOrganizationCallback($isOrganizationCallback): void
+    public function setIsOrganizationCallback(?callable $isOrganizationIsOrganizationCallback): void
     {
-        $this->organizationUnitApi->setIsResourceNodeCallback($isOrganizationCallback);
+        $this->organizationUnitApi->setIsResourceNodeCallback($isOrganizationIsOrganizationCallback);
     }
 }

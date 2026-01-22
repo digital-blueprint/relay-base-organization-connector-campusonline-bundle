@@ -86,6 +86,24 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         $this->getOrganizationApi()->recreateOrganizationsCache();
     }
 
+    public function getOrganizationApi(): OrganizationApiInterface
+    {
+        if ($this->organizationApi === null) {
+            if ($this->config[Configuration::LEGACY_NODE] ?? true) {
+                $this->organizationApi = new LegacyOrganizationApi(
+                    $this->eventDispatcher, $this->config, $this->cachePool, $this->cacheTTL, $this->logger);
+            } else {
+                $this->organizationApi = new PublicRestOrganizationApi(
+                    $this->entityManager, $this->eventDispatcher, $this->config, $this->logger);
+            }
+            if ($this->clientHandler !== null) {
+                $this->organizationApi->setClientHandler($this->clientHandler);
+            }
+        }
+
+        return $this->organizationApi;
+    }
+
     /**
      * @param array $options Available options:
      *                       * 'lang' ('de' or 'en')
@@ -132,23 +150,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         }
 
         return $organizations;
-    }
-
-    private function getOrganizationApi(): OrganizationApiInterface
-    {
-        if ($this->organizationApi === null) {
-            if ($this->config[Configuration::LEGACY_NODE] ?? true) {
-                $this->organizationApi = new LegacyOrganizationApi($this->eventDispatcher,
-                    $this->config, $this->cachePool, $this->cacheTTL, $this->logger);
-            } else {
-                $this->organizationApi = new PublicRestOrganizationApi($this->entityManager, $this->config, $this->logger);
-            }
-            if ($this->clientHandler !== null) {
-                $this->organizationApi->setClientHandler($this->clientHandler);
-            }
-        }
-
-        return $this->organizationApi;
     }
 
     private function postProcessOrganization(OrganizationAndExtraData $organizationAndExtraData): Organization

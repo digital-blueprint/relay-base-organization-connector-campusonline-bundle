@@ -28,4 +28,9 @@ interface OrganizationApiInterface
     public function setClientHandler(?object $handler): void;
 
     public function recreateOrganizationsCache(): void;
+
+    /**
+     * @param callable(mixed $organizationAndExtraData): array $isOrganizationCallback
+     */
+    public function setIsOrganizationCallback(callable $isOrganizationCallback): void;
 }

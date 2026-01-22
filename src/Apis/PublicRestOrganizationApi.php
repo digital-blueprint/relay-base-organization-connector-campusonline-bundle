@@ -11,6 +11,7 @@ use Dbp\CampusonlineApi\PublicRestApi\Organizations\OrganizationResource;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationName;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\RebuildingOrganizationCacheEvent;
 use Dbp\Relay\CoreBundle\Doctrine\QueryHelper;
 use Dbp\Relay\CoreBundle\Rest\Options;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterException;
@@ -21,15 +22,22 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class PublicRestOrganizationApi implements OrganizationApiInterface
 {
+    public const INCLUDE_ORGANIZATION = 0;
+    public const IGNORE_ORGANIZATION = 1;
+    public const IGNORE_ORGANIZATION_AND_ITS_CHILDREN = 2;
+
     private OrganizationApi $organizationApi;
     private ?LoggerInterface $logger;
+    private ?\Closure $isOrganigramOrganizationCallback = null;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
         array $config,
         ?LoggerInterface $logger = null)
     {
@@ -52,12 +60,24 @@ class PublicRestOrganizationApi implements OrganizationApiInterface
         $this->organizationApi->getOrganizationsCursorBased(maxNumItems: 1);
     }
 
+    public function setClientHandler(?object $handler): void
+    {
+        $this->organizationApi->setClientHandler($handler);
+    }
+
+    public function setIsOrganizationCallback(callable $isOrganizationCallback): void
+    {
+        $this->isOrganigramOrganizationCallback = $isOrganizationCallback(...);
+    }
+
     /**
      * @throws \Throwable
      * @throws Exception
      */
     public function recreateOrganizationsCache(): void
     {
+        $this->onRebuildingResourceCacheCallback();
+
         $organizationsStagingTable = CachedOrganization::STAGING_TABLE_NAME;
         $uidColumn = CachedOrganization::UID;
         $codeColumn = CachedOrganization::CODE;
@@ -89,17 +109,37 @@ class PublicRestOrganizationApi implements OrganizationApiInterface
         $connection = $this->entityManager->getConnection();
         try {
             $nextCursor = null;
+            $subtreeRootsToDelete = [];
+            $organizationsToDelete = [];
             do {
-                $organizationsResourcePage = $this->organizationApi->getOrganizationsCursorBased(
-                    [OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true'],
-                    $nextCursor, 1000);
+                $organizationsResourcePage = $this->organizationApi->getOrganizationsCursorBased([
+                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true',
+                    'only_active' => 'true',
+                ], $nextCursor, 1000);
 
                 /** @var OrganizationResource $organizationResource */
                 foreach ($organizationsResourcePage->getResources() as $organizationResource) {
+                    $parentUid = $organizationResource->getParentUid();
+                    if ($this->isOrganigramOrganizationCallback !== null) {
+                        $result = ($this->isOrganigramOrganizationCallback)($organizationResource);
+                        if (array_key_exists(0, $result)) {
+                            switch ($result[0]) {
+                                case self::IGNORE_ORGANIZATION:
+                                    $organizationsToDelete[] = $organizationResource->getUid();
+                                    break;
+                                case self::IGNORE_ORGANIZATION_AND_ITS_CHILDREN:
+                                    $subtreeRootsToDelete[] = $organizationResource->getUid();
+                                    break;
+                            }
+                        }
+                        if (array_key_exists(1, $result)) {
+                            $parentUid = $result[1];
+                        }
+                    }
                     $connection->executeStatement($insertIntoOrganizationsStagingSql, [
                         $uidColumn => $organizationResource->getUid(),
                         $codeColumn => $organizationResource->getCode(),
-                        $parentUidColumn => $organizationResource->getParentUid(),
+                        $parentUidColumn => $parentUid,
                         $groupKeyColumn => $organizationResource->getGroupKey(),
                         $typeUidColumn => $organizationResource->getTypeUid(),
                         $addressStreetColumn => $organizationResource->getAddressStreet(),
@@ -118,6 +158,45 @@ class PublicRestOrganizationApi implements OrganizationApiInterface
                 }
                 $nextCursor = $organizationsResourcePage->getNextCursor();
             } while ($nextCursor !== null);
+
+            if ([] === $subtreeRootsToDelete) {
+                try {
+                    $foreignKeyConstraint = 'fk_organizations_parent_uid';
+                    $connection->executeStatement(<<<STMT
+                            ALTER TABLE $organizationsStagingTable
+                            ADD CONSTRAINT $foreignKeyConstraint
+                            FOREIGN KEY ($parentUidColumn) REFERENCES $organizationsStagingTable($uidColumn)
+                            ON DELETE CASCADE;
+                        STMT
+                    );
+                    $inClause = implode(',', array_fill(0, count($subtreeRootsToDelete), '?'));
+                    $connection->executeStatement(<<<STMT
+                        DELETE FROM $organizationsStagingTable
+                        WHERE $uidColumn IN ($inClause);
+                    STMT, $subtreeRootsToDelete);
+                } catch (\Throwable $throwable) {
+                    $this->logger->error('failed to delete organization subtrees: '.$throwable->getMessage(), [$throwable]);
+                    throw $throwable;
+                } finally {
+                    $connection->executeStatement(<<<STMT
+                            ALTER TABLE $organizationsStagingTable
+                            DROP FOREIGN KEY $foreignKeyConstraint;
+                        STMT
+                    );
+                }
+            }
+            if ([] !== $organizationsToDelete) {
+                try {
+                    $inClause = implode(',', array_fill(0, count($organizationsToDelete), '?'));
+                    $connection->executeStatement(<<<STMT
+                        DELETE FROM $organizationsStagingTable
+                        WHERE $uidColumn IN ($inClause);
+                    STMT, $organizationsToDelete);
+                } catch (\Throwable $throwable) {
+                    $this->logger->error('failed to delete organizations: '.$throwable->getMessage(), [$throwable]);
+                    throw $throwable;
+                }
+            }
 
             $organizationsLiveTable = CachedOrganization::TABLE_NAME;
             $organizationsTempTable = 'organizations_old';
@@ -156,6 +235,9 @@ class PublicRestOrganizationApi implements OrganizationApiInterface
             $options);
     }
 
+    /**
+     * @return iterable<OrganizationAndExtraData>
+     */
     public function getOrganizations(int $currentPageNumber, int $maxNumItemsPerPage, array $options = []): iterable
     {
         $CACHED_ORGANIZATION_ENTITY_ALIAS = 'o';
@@ -200,9 +282,21 @@ class PublicRestOrganizationApi implements OrganizationApiInterface
         }
     }
 
-    public function setClientHandler(?object $handler): void
+    /**
+     * @return iterable<OrganizationAndExtraData>
+     */
+    public function getChildOrganizations(string $parentIdentifier, array $options = []): iterable
     {
-        $this->organizationApi->setClientHandler($handler);
+        foreach ($this->entityManager->getRepository(CachedOrganization::class)->findBy([
+            CachedOrganization::PARENT_UID => $parentIdentifier,
+        ]) as $cachedOrganization) {
+            yield self::createOrganizationAndExtraDataFromCachedOrganization($cachedOrganization, $options);
+        }
+    }
+
+    private function onRebuildingResourceCacheCallback(): void
+    {
+        $this->eventDispatcher->dispatch(new RebuildingOrganizationCacheEvent($this));
     }
 
     private static function createOrganizationAndExtraDataFromCachedOrganization(CachedOrganization $cachedOrganization, array $options): OrganizationAndExtraData
