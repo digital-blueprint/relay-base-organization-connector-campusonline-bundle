@@ -9,9 +9,10 @@ use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\Co
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\DbpRelayBaseOrganizationConnectorCampusonlineExtension;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationName;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationNameStaging;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationStaging;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
-use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\Rest\Options;
 use Dbp\Relay\CoreBundle\TestUtils\TestEntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,23 +74,16 @@ class OrganizationProviderTest extends ApiTestCase
     private function createStagingTables(): void
     {
         $organizationTableName = CachedOrganization::TABLE_NAME;
-        $organizationStagingTableName = CachedOrganization::STAGING_TABLE_NAME;
+        $organizationStagingTableName = CachedOrganizationStaging::TABLE_NAME;
 
         $this->entityManager->getConnection()->executeStatement(
             "CREATE TABLE $organizationStagingTableName AS SELECT * FROM $organizationTableName");
 
         $organizationNamesTableName = CachedOrganizationName::TABLE_NAME;
-        $organizationNamesStagingTableName = CachedOrganizationName::STAGING_TABLE_NAME;
+        $organizationNamesStagingTableName = CachedOrganizationNameStaging::TABLE_NAME;
 
         $this->entityManager->getConnection()->executeStatement(
             "CREATE TABLE $organizationNamesStagingTableName AS SELECT * FROM $organizationNamesTableName");
-    }
-
-    private function setUpLegacyApi(): void
-    {
-        $this->organizationProvider->setConfig($this->getLegacyApiConfig());
-        $this->organizationProvider->reset();
-        $this->organizationEventSubscriber->setConfig(self::createEventSubscriberConfig(false));
     }
 
     private function setUpPublicRestApi(): void
@@ -99,17 +93,6 @@ class OrganizationProviderTest extends ApiTestCase
         $this->organizationEventSubscriber->setConfig(self::createEventSubscriberConfig(true));
 
         $this->recreateOrganizationCache();
-    }
-
-    private function getLegacyApiConfig(): array
-    {
-        $config = [];
-        $config[Configuration::CAMPUS_ONLINE_NODE] = [
-            'legacy' => true,
-            'org_root_id' => '1',
-        ];
-
-        return $config;
     }
 
     private function getPublicRestApiConfig(): array
@@ -273,123 +256,6 @@ class OrganizationProviderTest extends ApiTestCase
                 && $org->getLocalDataValue(self::CITY_ATTRIBUTE_NAME) === 'Graz City'));
     }
 
-    public function testGetOrganizationByIdLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response.xml')),
-        ]);
-        $org = $this->organizationProvider->getOrganizationById('2322');
-        $this->assertSame('2322', $org->getIdentifier());
-        $this->assertSame('Institute of Fundamentals and Theory in Electrical  Engineering', $org->getName());
-        $this->assertNull($org->getLocalData());
-    }
-
-    public function testGetOrganizationByIdLocalDataLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response.xml')),
-        ]);
-
-        $options = [];
-        Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
-        $org = $this->organizationProvider->getOrganizationById('2322', $options);
-
-        $this->assertSame('2322', $org->getIdentifier());
-        $this->assertSame('Institute of Fundamentals and Theory in Electrical  Engineering', $org->getName());
-        $this->assertSame('4370', $org->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
-    }
-
-    public function testGetOrganizationByIdNotFoundLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response.xml')),
-        ]);
-
-        try {
-            $this->organizationProvider->getOrganizationById('---');
-        } catch (\Throwable $exception) {
-            $this->assertInstanceOf(ApiError::class, $exception);
-            $this->assertEquals(404, $exception->getStatusCode());
-        }
-    }
-
-    public function testGetOrganizationByIdNoPermissionLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(403, [], 'error'),
-        ]);
-
-        try {
-            $this->organizationProvider->getOrganizationById('2234');
-            $this->fail('Expected ApiError exception not thrown');
-        } catch (ApiError $apiError) {
-            $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_INTERNAL_SERVER_ERROR, $apiError->getStatusCode());
-        }
-    }
-
-    public function testGetOrganizationsLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
-        ]);
-
-        $organizations = $this->organizationProvider->getOrganizations(1, 10);
-        $this->assertCount(3, $organizations);
-
-        $this->assertSame('2391', $organizations[0]->getIdentifier());
-        $this->assertNull($organizations[0]->getLocalData());
-        $this->assertSame('18454', $organizations[1]->getIdentifier());
-        $this->assertNull($organizations[1]->getLocalData());
-        $this->assertSame('18452', $organizations[2]->getIdentifier());
-        $this->assertNull($organizations[2]->getLocalData());
-    }
-
-    public function testGetOrganizationsLocalDataLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
-        ]);
-
-        $options = [];
-        Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
-        $organizations = $this->organizationProvider->getOrganizations(1, 10, $options);
-        $this->assertCount(3, $organizations);
-
-        $this->assertSame('2391', $organizations[0]->getIdentifier());
-        $this->assertSame('6350', $organizations[0]->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
-        $this->assertSame('18454', $organizations[1]->getIdentifier());
-        $this->assertSame('6352', $organizations[1]->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
-        $this->assertSame('18452', $organizations[2]->getIdentifier());
-        $this->assertSame('6351', $organizations[2]->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
-    }
-
-    public function testGetOrganizationsPartialPaginationLegacy()
-    {
-        $this->setUpLegacyApi();
-
-        $this->mockResponses([
-            new Response(200, ['Content-Type' => 'text/xml;charset=utf-8'], file_get_contents(__DIR__.'/co_orgunit_response_nested.xml')),
-        ]);
-
-        $organizations = $this->organizationProvider->getOrganizations(3, 1);
-        $this->assertCount(1, $organizations);
-
-        // assert is third item:
-        $this->assertSame('18452', $organizations[0]->getIdentifier());
-    }
-
     private function recreateOrganizationCache(): void
     {
         $this->mockResponses([...self::createMockAuthServerResponses(),
@@ -403,10 +269,10 @@ class OrganizationProviderTest extends ApiTestCase
             $this->organizationProvider->recreateOrganizationsCache();
         } catch (\Throwable) {
             $organizationsLiveTable = CachedOrganization::TABLE_NAME;
-            $organizationsStagingTable = CachedOrganization::STAGING_TABLE_NAME;
+            $organizationsStagingTable = CachedOrganizationStaging::TABLE_NAME;
             $organizationsTempTable = 'organizations_old';
             $organizationNamesLiveTable = CachedOrganizationName::TABLE_NAME;
-            $organizationNamesStagingTable = CachedOrganizationName::STAGING_TABLE_NAME;
+            $organizationNamesStagingTable = CachedOrganizationNameStaging::TABLE_NAME;
             $organizationNamesTempTable = 'organization_names_old';
             $connection = $this->entityManager->getConnection();
             $connection->executeStatement("ALTER TABLE $organizationsLiveTable RENAME TO $organizationsTempTable;");

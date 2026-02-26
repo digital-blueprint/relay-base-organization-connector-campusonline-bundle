@@ -4,8 +4,6 @@ services:
     autoconfigure: true
     arguments:
       $entityManager: '@doctrine.orm.dbp_relay_base_organization_connector_campusonline_bundle_entity_manager'
-    calls:
-      - setCache: [ '@dbp.relay.base_organization_connector_campusonline.cache.campus_online', 87000 ] # one day
 
   Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\HealthCheck:
     autowire: true
@@ -25,8 +23,3 @@ services:
 
   Dbp\Relay\BaseOrganizationBundle\API\OrganizationProviderInterface:
     '@Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider'
-
-  dbp.relay.base_organization_connector_campusonline.cache.campus_online:
-    parent: cache.app
-    tags:
-      - { name: 'cache.pool', default_lifetime: 60 }
