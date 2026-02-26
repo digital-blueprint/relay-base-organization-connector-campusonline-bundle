@@ -23,7 +23,9 @@ use Dbp\Relay\CoreBundle\Doctrine\QueryHelper;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataEventDispatcher;
 use Dbp\Relay\CoreBundle\Rest\Options;
+use Dbp\Relay\CoreBundle\Rest\Query\Filter\Filter;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterException;
+use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTools;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTreeBuilder;
 use Dbp\Relay\CoreBundle\Rest\Query\Pagination\Pagination;
 use Doctrine\DBAL\Exception;
@@ -39,8 +41,9 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 {
     use LoggerAwareTrait;
 
-    public const INCLUDE_ORGANIZATION = 0;
-    public const IGNORE_ORGANIZATION = 1;
+    public const DEFAULT_LANGUAGE = 'de';
+
+    private const MAX_NUM_ORGANIZATION_UIDS_PER_REQUEST = 50;
 
     private ?OrganizationApi $organizationApi = null;
     private ?\Closure $isOrganizationCallback = null;
@@ -48,6 +51,10 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private LocalDataEventDispatcher $localDataEventDispatcher;
     private array $config = [];
     private ?object $clientHandler = null;
+    /** @var string[] */
+    private array $currentResultOrganizationUids = [];
+    /** @var OrganizationResource[] */
+    private array $organizationResourcesRequestCache = [];
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -114,7 +121,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
             do {
                 $organizationsResourcePage = $this->getOrganizationApi()->getOrganizationsCursorBased([
-                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true',
                     'only_active' => 'true',
                 ], $nextCursor, 1000);
 
@@ -182,23 +188,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         }
     }
 
-    public function getOrganizationApi(): OrganizationApi
-    {
-        if ($this->organizationApi === null) {
-            $this->organizationApi = new OrganizationApi(
-                new Connection(
-                    $this->config['base_url'],
-                    $this->config['client_id'],
-                    $this->config['client_secret']
-                )
-            );
-            $this->organizationApi->setLogger($this->logger);
-            $this->organizationApi->setClientHandler($this->clientHandler);
-        }
-
-        return $this->organizationApi;
-    }
-
     /**
      * @param array $options Available options:
      *                       * 'lang' ('de' or 'en')
@@ -209,14 +198,24 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     public function getOrganizationById(string $identifier, array $options = []): Organization
     {
         $options = $this->handleNewRequest($options);
-
         try {
-            $organizationAndExtraData = $this->getOrganizationByIdInternal($identifier, $options);
-        } catch (ApiException $apiException) {
-            throw self::dispatchException($apiException, $identifier);
+            $filter = FilterTreeBuilder::create()
+                ->equals('identifier', $identifier)
+                ->createFilter();
+        } catch (FilterException $filterException) {
+            $this->logger->error('failed to build filter for person identifier query: '.$filterException->getMessage(), [$filterException]);
+            throw new \RuntimeException('failed to build filter for person identifier query');
+        }
+        $organizations = $this->getOrganizationsInternal(1, 2, $filter, $options);
+
+        $numOrganizations = count($organizations);
+        if ($numOrganizations === 0) {
+            throw ApiError::withDetails(Response::HTTP_NOT_FOUND, sprintf("organization with identifier '%s' could not be found!", $identifier));
+        } elseif ($numOrganizations > 1) {
+            throw new \RuntimeException(sprintf("multiple organizations found for identifier '%s'", $identifier));
         }
 
-        return $this->postProcessOrganization($organizationAndExtraData);
+        return $organizations[0];
     }
 
     /**
@@ -235,41 +234,88 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     {
         $options = $this->handleNewRequest($options);
 
-        $organizations = [];
-        try {
-            foreach ($this->getOrganizationsInternal($currentPageNumber, $maxNumItemsPerPage, $options) as $organizationAndExtraData) {
-                $organizations[] = $this->postProcessOrganization($organizationAndExtraData);
-            }
-        } catch (ApiException $apiException) {
-            throw self::dispatchException($apiException);
-        }
-
-        return $organizations;
+        return $this->getOrganizationsInternal($currentPageNumber, $maxNumItemsPerPage, null, $options);
     }
 
     /**
-     * @return iterable<OrganizationAndExtraData>
+     * @return OrganizationAndExtraData[]
      */
-    public function getChildOrganizations(string $parentIdentifier, array $options = []): iterable
+    public function getChildOrganizations(string $parentIdentifier, array $options = []): array
     {
-        foreach ($this->entityManager->getRepository(CachedOrganization::class)->findBy([
-            CachedOrganization::PARENT_UID => $parentIdentifier,
-        ]) as $cachedOrganization) {
-            yield self::createOrganizationAndExtraDataFromCachedOrganization($cachedOrganization, $options);
+        try {
+            $filter = FilterTreeBuilder::create()
+                ->equals(OrganizationEventSubscriber::PARENT_UID_SOURCE_ATTRIBUTE, $parentIdentifier)
+                ->createFilter();
+        } catch (FilterException $filterException) {
+            throw new \RuntimeException('failed to build filter for child organizations query:'.
+                $filterException->getMessage(), previous: $filterException);
+        }
+
+        return $this->getOrganizationsFromCache(1, 1000, $filter, $options);
+    }
+
+    /**
+     * Gets all organizations of the current result set from the API and caches them locally, so that not every organization
+     * has to be requested individually on setting local data attributes.
+     */
+    public function getAndCacheCurrentResultOrganizationsFromApi(): void
+    {
+        try {
+            $currentOrganizationOffset = 0;
+            while ($currentOrganizationOffset < count($this->currentResultOrganizationUids)) {
+                $queryParameters = [
+                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true',
+                    OrganizationApi::UID_QUERY_PARAMETER => array_slice(
+                        $this->currentResultOrganizationUids,
+                        $currentOrganizationOffset,
+                        self::MAX_NUM_ORGANIZATION_UIDS_PER_REQUEST),
+                ];
+
+                try {
+                    foreach ($this->getOrganizationApi()->getOrganizationsOffsetBased($queryParameters,
+                        $currentOrganizationOffset, self::MAX_NUM_ORGANIZATION_UIDS_PER_REQUEST) as $organizationResource) {
+                        $this->organizationResourcesRequestCache[$organizationResource->getUid()] = $organizationResource;
+                    }
+                    $currentOrganizationOffset += self::MAX_NUM_ORGANIZATION_UIDS_PER_REQUEST;
+                } catch (ApiException $apiException) {
+                    self::dispatchException($apiException);
+                }
+            }
+        } finally {
+            $this->currentResultOrganizationUids = [];
         }
     }
 
-    private function getOrganizationByIdInternal(string $identifier, array $options = []): OrganizationAndExtraData
+    public function getOrganizationFromApiCached(string $identifier): OrganizationResource
     {
-        $cachedOrganization = $this->entityManager->getRepository(CachedOrganization::class)->find($identifier);
-        if ($cachedOrganization === null) {
-            throw new ApiException('organization with ID not found: '.$identifier,
-                Response::HTTP_NOT_FOUND, true);
+        if (null === ($organizationResource = $this->organizationResourcesRequestCache[$identifier] ?? null)) {
+            try {
+                $organizationResource = $this->getOrganizationApi()->getOrganizationByIdentifier($identifier, [
+                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true']);
+                $this->organizationResourcesRequestCache[$identifier] = $organizationResource;
+            } catch (ApiException $apiException) {
+                self::dispatchException($apiException, $identifier);
+            }
         }
 
-        return self::createOrganizationAndExtraDataFromCachedOrganization(
-            $cachedOrganization,
-            $options);
+        return $organizationResource;
+    }
+
+    private function getOrganizationApi(): OrganizationApi
+    {
+        if ($this->organizationApi === null) {
+            $this->organizationApi = new OrganizationApi(
+                new Connection(
+                    $this->config['base_url'],
+                    $this->config['client_id'],
+                    $this->config['client_secret']
+                )
+            );
+            $this->organizationApi->setLogger($this->logger);
+            $this->organizationApi->setClientHandler($this->clientHandler);
+        }
+
+        return $this->organizationApi;
     }
 
     private function onRebuildingResourceCacheCallback(): void
@@ -278,56 +324,81 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     }
 
     /**
-     * @return iterable<OrganizationAndExtraData>
+     * @return OrganizationAndExtraData[]
      */
-    private function getOrganizationsInternal(int $currentPageNumber, int $maxNumItemsPerPage, array $options = []): iterable
+    private function getOrganizationsFromCache(
+        int $currentPageNumber, int $maxNumItemsPerPage, ?Filter $filter, array $options = []): array
     {
         $CACHED_ORGANIZATION_ENTITY_ALIAS = 'o';
-        $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS = 'on';
+        $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS = 'o_n';
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder
-            ->select($CACHED_ORGANIZATION_ENTITY_ALIAS)
-            ->from(CachedOrganization::class, $CACHED_ORGANIZATION_ENTITY_ALIAS)
-            ->innerJoin(CachedOrganizationName::class, $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS, Join::WITH,
-                $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.CachedOrganization::UID." = $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.organization");
-
-        if ($searchTerm = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) {
-            try {
-                $filter = FilterTreeBuilder::create()
-                    ->iContains($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::NAME,
-                        $searchTerm)
-                    ->equals($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::LANGUAGE_TAG,
-                        Options::getLanguage($options))
-                    ->createFilter();
-            } catch (FilterException $filterException) {
-                $this->logger->error('failed to build filter for organization search: '.$filterException->getMessage(), [$filterException]);
-                throw new ApiException('failed to build filter for organization search');
+        try {
+            $combinedFilter = FilterTreeBuilder::create()->createFilter();
+            if ($filter) {
+                $combinedFilter->combineWith($filter);
+            }
+            if ($searchTerm = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) {
+                $combinedFilter->combineWith(
+                    FilterTreeBuilder::create()
+                        ->iContains($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::NAME,
+                            $searchTerm)
+                        ->equals($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::LANGUAGE_TAG,
+                            Options::getLanguage($options))
+                        ->createFilter());
+            }
+            if ($filterFromOptions = Options::getFilter($options)) {
+                $combinedFilter->combineWith($filterFromOptions);
             }
 
-            try {
-                QueryHelper::addFilter($queryBuilder, $filter);
-            } catch (\Exception $exception) {
-                $this->logger->error('failed to apply filter for organization search: '.$exception->getMessage(), [$exception]);
-                throw new ApiException('failed to apply filter for organization search');
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder
+                ->select($CACHED_ORGANIZATION_ENTITY_ALIAS)
+                ->from(CachedOrganization::class, $CACHED_ORGANIZATION_ENTITY_ALIAS)
+                ->innerJoin(CachedOrganizationName::class, $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS, Join::WITH,
+                    $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.CachedOrganization::UID." = $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.organization");
+
+            if (false === $combinedFilter->isEmpty()) {
+                $pathMappingOrg = array_map(
+                    function (string $columnName) use ($CACHED_ORGANIZATION_ENTITY_ALIAS): string {
+                        return $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.$columnName;
+                    }, CachedOrganization::BASE_ENTITY_ATTRIBUTE_MAPPING);
+
+                foreach (array_keys(CachedOrganization::LOCAL_DATA_SOURCE_ATTRIBUTES) as $attributeName) {
+                    $pathMappingOrg[$attributeName] = $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.$attributeName;
+                }
+
+                $pathMappingOrgName = array_map(
+                    function (string $columnName) use ($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS): string {
+                        return $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.$columnName;
+                    }, CachedOrganizationName::BASE_ENTITY_ATTRIBUTE_MAPPING);
+
+                FilterTools::mapConditionPaths($combinedFilter, array_merge($pathMappingOrg, $pathMappingOrgName));
+                QueryHelper::addFilter($queryBuilder, $combinedFilter);
             }
-        }
 
-        $paginator = new Paginator($queryBuilder->getQuery());
-        $paginator->getQuery()
-            ->setFirstResult(Pagination::getFirstItemIndex($currentPageNumber, $maxNumItemsPerPage))
-            ->setMaxResults($maxNumItemsPerPage);
+            $paginator = new Paginator($queryBuilder->getQuery());
+            $paginator->getQuery()
+                ->setFirstResult(Pagination::getFirstItemIndex($currentPageNumber, $maxNumItemsPerPage))
+                ->setMaxResults($maxNumItemsPerPage);
 
-        /** @var CachedOrganization $cachedOrganization */
-        foreach ($paginator as $cachedOrganization) {
-            yield self::createOrganizationAndExtraDataFromCachedOrganization($cachedOrganization, $options);
+            $organizationAndExtraDataPage = [];
+            /** @var CachedOrganization $cachedOrganization */
+            foreach ($paginator as $cachedOrganization) {
+                $organizationAndExtraDataPage[] =
+                    self::createOrganizationAndExtraDataFromCachedOrganization($cachedOrganization, $options);
+            }
+
+            return $organizationAndExtraDataPage;
+        } catch (\Throwable $exception) {
+            $this->logger->error('failed to get organizations from cache: '.$exception->getMessage(), [$exception]);
+            throw ApiError::withDetails(Response::HTTP_INTERNAL_SERVER_ERROR, 'failed to get organizations');
         }
     }
 
-    private function postProcessOrganization(OrganizationAndExtraData $organizationAndExtraData): Organization
+    private function postProcessOrganization(OrganizationAndExtraData $organizationAndExtraData, array $options): Organization
     {
         $postEvent = new OrganizationPostEvent(
-            $organizationAndExtraData->getOrganization(), $organizationAndExtraData->getExtraData());
+            $organizationAndExtraData->getOrganization(), $organizationAndExtraData->getExtraData(), $options);
         $this->localDataEventDispatcher->dispatch($postEvent);
 
         return $organizationAndExtraData->getOrganization();
@@ -360,7 +431,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
             OrganizationEventSubscriber::GROUP_KEY_SOURCE_ATTRIBUTE => $cachedOrganization->getGroupKey(),
             OrganizationEventSubscriber::PARENT_UID_SOURCE_ATTRIBUTE => $cachedOrganization->getParentUid(),
             OrganizationEventSubscriber::TYPE_UID_SOURCE_ATTRIBUTE => $cachedOrganization->getTypeUid(),
-            // TODO: contact data (addresses, etc.)
         ]);
     }
 
@@ -373,10 +443,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         $cachedOrganization->setGroupKey($organizationResource->getGroupKey());
         $cachedOrganization->setParentUid($organizationResource->getParentUid());
         $cachedOrganization->setTypeUid($organizationResource->getTypeUid());
-        $cachedOrganization->setAddressStreet($organizationResource->getAddressStreet());
-        $cachedOrganization->setAddressCity($organizationResource->getAddressCity());
-        $cachedOrganization->setAddressPostalCode($organizationResource->getAddressPostalCode());
-        $cachedOrganization->setAddressCountry($organizationResource->getAddressCountry());
         if ($organizationResource->getUid() === '123') {
             dump($organizationResource->getResourceData());
         }
@@ -411,5 +477,21 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         }
 
         return new ApiError(Response::HTTP_INTERNAL_SERVER_ERROR, 'failed to get organization(s): '.$apiException->getMessage());
+    }
+
+    /**
+     * @return Organization[]
+     */
+    private function getOrganizationsInternal(int $currentPageNumber, int $maxNumItemsPerPage, ?Filter $filter, array $options): array
+    {
+        $organizationAndExtraDataPage = $this->getOrganizationsFromCache($currentPageNumber, $maxNumItemsPerPage, $filter, $options);
+
+        $this->currentResultOrganizationUids = array_map(
+            fn (OrganizationAndExtraData $organizationAndExtraData) => $organizationAndExtraData->getOrganization()->getIdentifier(),
+            $organizationAndExtraDataPage);
+
+        return array_map(
+            fn (OrganizationAndExtraData $organizationAndExtraData) => $this->postProcessOrganization($organizationAndExtraData, $options),
+            $organizationAndExtraDataPage);
     }
 }
