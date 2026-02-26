@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Apis;
+namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service;
 
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 

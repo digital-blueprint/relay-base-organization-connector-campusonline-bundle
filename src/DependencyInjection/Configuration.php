@@ -34,9 +34,6 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode(self::LEGACY_NODE)
                             ->defaultTrue()
                         ->end()
-                            ->scalarNode('api_url')->end() // legacy
-                            ->scalarNode('api_token')->end() // legacy
-                            ->scalarNode('org_root_id')->end() // legacy
                             ->scalarNode(self::BASE_URL_NODE)->end()
                             ->scalarNode(self::CLIENT_ID_NODE)->end()
                             ->scalarNode(self::CLIENT_SECRET_NODE)->end()

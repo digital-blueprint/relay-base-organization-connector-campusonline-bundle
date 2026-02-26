@@ -10,13 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: self::TABLE_NAME)]
 #[ORM\Entity]
-class CachedOrganization
+class CachedOrganizationStaging
 {
     use CachedOrganizationTrait;
 
-    public const TABLE_NAME = 'organizations';
+    public const TABLE_NAME = 'organizations_staging';
 
-    #[ORM\OneToMany(targetEntity: CachedOrganizationName::class, mappedBy: 'organization')]
+    #[ORM\OneToMany(targetEntity: CachedOrganizationNameStaging::class, mappedBy: 'organization', cascade: ['persist'])]
     private Collection $names;
 
     public function __construct()

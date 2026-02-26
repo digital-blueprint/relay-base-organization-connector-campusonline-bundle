@@ -28,10 +28,8 @@ class DbpRelayBaseOrganizationConnectorCampusonlineExtension extends Configurabl
 
         $container->getDefinition(OrganizationProvider::class)
             ->addMethodCall('setConfig', [$mergedConfig]);
-
         $container->getDefinition(OrganizationEventSubscriber::class)
             ->addMethodCall('setConfig', [$mergedConfig]);
-
         $container->getDefinition(CacheRefreshCronJob::class)
             ->addMethodCall('setConfig', [$mergedConfig]);
     }
