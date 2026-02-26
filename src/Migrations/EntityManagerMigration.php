@@ -26,10 +26,6 @@ abstract class EntityManagerMigration extends AbstractEntityManagerMigration
         $parentUidColumn = CachedOrganization::PARENT_UID;
         $groupKeyColumn = CachedOrganization::GROUP_KEY;
         $typeUidColumn = CachedOrganization::TYPE_UID;
-        $addressStreetColumn = CachedOrganization::ADDRESS_STREET;
-        $addressCityColumn = CachedOrganization::ADDRESS_CITY;
-        $addressPostalCodeColumn = CachedOrganization::ADDRESS_POSTAL_CODE;
-        $addressCountryColumn = CachedOrganization::ADDRESS_COUNTRY;
 
         $this->addSql(<<<STMT
             CREATE TABLE $organizationsTable (
@@ -38,10 +34,6 @@ abstract class EntityManagerMigration extends AbstractEntityManagerMigration
                 $parentUidColumn VARCHAR(16) DEFAULT NULL,
                 $groupKeyColumn VARCHAR(16) DEFAULT NULL,
                 $typeUidColumn VARCHAR(16) DEFAULT NULL,
-                $addressStreetColumn VARCHAR(256) DEFAULT NULL,
-                $addressCityColumn VARCHAR(128) DEFAULT NULL,
-                $addressPostalCodeColumn VARCHAR(16) DEFAULT NULL,
-                $addressCountryColumn VARCHAR(128) DEFAULT NULL,
                 PRIMARY KEY($uidColumn)
             ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
             STMT);
