@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add more local data source attributes
+- Implement Campusonline Public REST API, caching the results in a local database table and getting organizations form there
+
 ## v0.1.23
 
 - Add support for Symfony 7
