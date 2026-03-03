@@ -6,6 +6,3 @@ parameters:
     level: 3
     paths:
         - src
-    ignoreErrors:
-        - message: '#.*NodeDefinition::children.*#'
-          path: ./src/DependencyInjection
