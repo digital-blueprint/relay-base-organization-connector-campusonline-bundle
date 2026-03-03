@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16f6b9cfa60357416e0ff9f211cfc682",
+    "content-hash": "800fc23ac7c423bdca268c3a3df728d0",
     "packages": [
         {
             "name": "api-platform/core",
@@ -224,16 +224,16 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "dev-main",
+            "version": "v0.3.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "c617b6c34dda229be15e2c52632a8a76029b1a25"
+                "reference": "a933d7276e52ba0cb29f550afad5d526bc615b18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/c617b6c34dda229be15e2c52632a8a76029b1a25",
-                "reference": "c617b6c34dda229be15e2c52632a8a76029b1a25",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/a933d7276e52ba0cb29f550afad5d526bc615b18",
+                "reference": "a933d7276e52ba0cb29f550afad5d526bc615b18",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,6 @@
                 "symfony/cache": "^5.4 || ^6.4.3",
                 "symfony/phpunit-bridge": "^7.0.7"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -269,9 +268,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/main"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.33"
             },
-            "time": "2026-02-26T10:11:52+00:00"
+            "time": "2026-03-03T10:53:07+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -329,16 +328,16 @@
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.229",
+            "version": "v0.1.231",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-core-bundle.git",
-                "reference": "fea333e28ccc4bfb20c7fc6178c18c256aa72427"
+                "reference": "ff8968f5f092004dcc2e8e9796b3c2168f56dd08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/fea333e28ccc4bfb20c7fc6178c18c256aa72427",
-                "reference": "fea333e28ccc4bfb20c7fc6178c18c256aa72427",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/ff8968f5f092004dcc2e8e9796b3c2168f56dd08",
+                "reference": "ff8968f5f092004dcc2e8e9796b3c2168f56dd08",
                 "shasum": ""
             },
             "require": {
@@ -435,9 +434,9 @@
             "description": "The core bundle of the Relay API gateway",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-core-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.229"
+                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.231"
             },
-            "time": "2026-02-12T09:41:50+00:00"
+            "time": "2026-03-03T09:57:07+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -11417,18 +11416,9 @@
             "time": "2025-11-17T20:03:58+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "dbp/campusonline-api",
-            "version": "dev-main",
-            "alias": "0.3.28",
-            "alias_normalized": "0.3.28.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "dbp/campusonline-api": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

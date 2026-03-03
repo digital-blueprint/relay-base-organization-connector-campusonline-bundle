@@ -19,6 +19,7 @@ trait CachedOrganizationTrait
     ];
 
     public const LOCAL_DATA_SOURCE_ATTRIBUTES = [
+        self::UID => 'getUid',
         self::CODE => 'getCode',
         self::PARENT_UID => 'getParentUid',
         self::GROUP_KEY => 'getGroupKey',

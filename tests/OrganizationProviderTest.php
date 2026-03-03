@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\Configuration;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\DbpRelayBaseOrganizationConnectorCampusonlineExtension;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganization;
@@ -212,6 +213,17 @@ class OrganizationProviderTest extends ApiTestCase
             fn ($org) => $org->getIdentifier() === '21'
                 && $org->getName() === 'Fakultät für Maschinenbau und Wirtschaftswissenschaften'
                 && $org->getLocalData() === null));
+    }
+
+    public function testGetOrganizationsWithSearchParameter()
+    {
+        $options = [];
+        Options::setLanguage($options, 'en');
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'Graz';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(1, $organizations);
+        $this->assertSame('37', $organizations[0]->getIdentifier());
+        $this->assertSame('Graz University of Technology', $organizations[0]->getName());
     }
 
     public function testGetOrganizationsPagination()

@@ -14,6 +14,7 @@ trait CachedOrganizationNameTrait
 
     public const BASE_ENTITY_ATTRIBUTE_MAPPING = [
         'name' => self::NAME,
+        'languageTag' => self::LANGUAGE_TAG,
     ];
     #[ORM\Id]
     #[ORM\Column(name: self::LANGUAGE_TAG, type: 'string', length: 2)]

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber;
 
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPostEvent;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPreEvent;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationAndExtraData;
@@ -21,11 +22,11 @@ class OrganizationEventSubscriber extends AbstractLocalDataEventSubscriber
     public const CONTACTS_SOURCE_DATA_ATTRIBUTE = 'contacts';
 
     // auto-mappable attributes:
-    public const UID_SOURCE_ATTRIBUTE = 'uid';
-    public const CODE_SOURCE_ATTRIBUTE = 'code';
-    public const GROUP_KEY_SOURCE_ATTRIBUTE = 'groupKey';
-    public const PARENT_UID_SOURCE_ATTRIBUTE = 'parentUid';
-    public const TYPE_UID_SOURCE_ATTRIBUTE = 'typeUid';
+    public const UID_SOURCE_ATTRIBUTE = CachedOrganization::UID;
+    public const CODE_SOURCE_ATTRIBUTE = CachedOrganization::CODE;
+    public const GROUP_KEY_SOURCE_ATTRIBUTE = CachedOrganization::GROUP_KEY;
+    public const PARENT_UID_SOURCE_ATTRIBUTE = CachedOrganization::PARENT_UID;
+    public const TYPE_UID_SOURCE_ATTRIBUTE = CachedOrganization::TYPE_UID;
 
     protected static function getSubscribedEventNames(): array
     {

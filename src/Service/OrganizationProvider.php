@@ -28,6 +28,7 @@ use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterException;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTools;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTreeBuilder;
 use Dbp\Relay\CoreBundle\Rest\Query\Pagination\Pagination;
+use Dbp\Relay\CoreBundle\Rest\Query\Sort\SortTools;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
@@ -234,7 +235,20 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     {
         $options = $this->handleNewRequest($options);
 
-        return $this->getOrganizationsInternal($currentPageNumber, $maxNumItemsPerPage, null, $options);
+        $filter = null;
+        if ($searchTerm = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) {
+            try {
+                $filter = FilterTreeBuilder::create()
+                    ->iContains(CachedOrganizationName::NAME, $searchTerm)
+                    ->equals(CachedOrganizationName::LANGUAGE_TAG, Options::getLanguage($options))
+                    ->createFilter();
+            } catch (FilterException $filterException) {
+                $this->logger->error('failed to build filter for organization search parameter: '.$filterException->getMessage(), [$filterException]);
+                throw new \RuntimeException('failed to build filter for organization search parameter');
+            }
+        }
+
+        return $this->getOrganizationsInternal($currentPageNumber, $maxNumItemsPerPage, $filter, $options);
     }
 
     /**
@@ -337,27 +351,15 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
             if ($filter) {
                 $combinedFilter->combineWith($filter);
             }
-            if ($searchTerm = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) {
-                $combinedFilter->combineWith(
-                    FilterTreeBuilder::create()
-                        ->iContains($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::NAME,
-                            $searchTerm)
-                        ->equals($CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.CachedOrganizationName::LANGUAGE_TAG,
-                            Options::getLanguage($options))
-                        ->createFilter());
-            }
             if ($filterFromOptions = Options::getFilter($options)) {
                 $combinedFilter->combineWith($filterFromOptions);
             }
+            $sort = Options::getSort($options);
 
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder
-                ->select($CACHED_ORGANIZATION_ENTITY_ALIAS)
-                ->from(CachedOrganization::class, $CACHED_ORGANIZATION_ENTITY_ALIAS)
-                ->innerJoin(CachedOrganizationName::class, $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS, Join::WITH,
-                    $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.CachedOrganization::UID." = $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.organization");
-
-            if (false === $combinedFilter->isEmpty()) {
+            $isFilterEmpty = $combinedFilter->isEmpty();
+            $pathMapping = [];
+            if (false === $isFilterEmpty || null !== $sort) {
+                // NOTE: local data attribute path mapping is done by the OrganizationEventSubscriber
                 $pathMappingOrg = array_map(
                     function (string $columnName) use ($CACHED_ORGANIZATION_ENTITY_ALIAS): string {
                         return $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.$columnName;
@@ -372,8 +374,23 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
                         return $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.'.'.$columnName;
                     }, CachedOrganizationName::BASE_ENTITY_ATTRIBUTE_MAPPING);
 
-                FilterTools::mapConditionPaths($combinedFilter, array_merge($pathMappingOrg, $pathMappingOrgName));
+                $pathMapping = array_merge($pathMappingOrg, $pathMappingOrgName);
+            }
+
+            $queryBuilder = $this->entityManager->createQueryBuilder();
+            $queryBuilder
+                ->select($CACHED_ORGANIZATION_ENTITY_ALIAS)
+                ->from(CachedOrganization::class, $CACHED_ORGANIZATION_ENTITY_ALIAS)
+                ->innerJoin(CachedOrganizationName::class, $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS, Join::WITH,
+                    $CACHED_ORGANIZATION_ENTITY_ALIAS.'.'.CachedOrganization::UID." = $CACHED_ORGANIZATION_NAME_ENTITY_ALIAS.organization");
+
+            if (false === $isFilterEmpty) {
+                FilterTools::mapConditionPaths($combinedFilter, $pathMapping);
                 QueryHelper::addFilter($queryBuilder, $combinedFilter);
+            }
+            if (null !== $sort) {
+                SortTools::mapSortPaths($sort, $pathMapping);
+                QueryHelper::addSort($queryBuilder, $sort);
             }
 
             $paginator = new Paginator($queryBuilder->getQuery());
@@ -425,13 +442,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
             }
         }
 
-        return new OrganizationAndExtraData($organization, [
-            OrganizationEventSubscriber::UID_SOURCE_ATTRIBUTE => $cachedOrganization->getUid(),
-            OrganizationEventSubscriber::CODE_SOURCE_ATTRIBUTE => $cachedOrganization->getCode(),
-            OrganizationEventSubscriber::GROUP_KEY_SOURCE_ATTRIBUTE => $cachedOrganization->getGroupKey(),
-            OrganizationEventSubscriber::PARENT_UID_SOURCE_ATTRIBUTE => $cachedOrganization->getParentUid(),
-            OrganizationEventSubscriber::TYPE_UID_SOURCE_ATTRIBUTE => $cachedOrganization->getTypeUid(),
-        ]);
+        return new OrganizationAndExtraData($organization, $cachedOrganization->getLocalDataSourceAttributeValues());
     }
 
     private static function createCachedOrganizationStagingFromOrganizationResource(
@@ -492,6 +503,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
         return array_map(
             fn (OrganizationAndExtraData $organizationAndExtraData) => $this->postProcessOrganization($organizationAndExtraData, $options),
-            $organizationAndExtraDataPage);
+            $organizationAndExtraDataPage
+        );
     }
 }
