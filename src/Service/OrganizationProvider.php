@@ -454,9 +454,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         $cachedOrganization->setGroupKey($organizationResource->getGroupKey());
         $cachedOrganization->setParentUid($organizationResource->getParentUid());
         $cachedOrganization->setTypeUid($organizationResource->getTypeUid());
-        if ($organizationResource->getUid() === '123') {
-            dump($organizationResource->getResourceData());
-        }
 
         foreach ($organizationResource->getName() as $languageTag => $name) {
             $cachedOrganizationName = new CachedOrganizationNameStaging();
