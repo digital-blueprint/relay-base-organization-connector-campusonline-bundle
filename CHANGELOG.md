@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+## v0.2.0
+
 - Add more local data source attributes
 - Implement Campusonline Public REST API, caching the results in a local database table and getting organizations form there
+- Drop support for CO XML Legacy API
 
 ## v0.1.23
 
