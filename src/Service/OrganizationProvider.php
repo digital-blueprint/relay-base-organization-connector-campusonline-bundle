@@ -433,11 +433,12 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     private static function createOrganizationAndExtraDataFromCachedOrganization(CachedOrganization $cachedOrganization, array $options): OrganizationAndExtraData
     {
+        $lang = Options::getLanguage($options) ?? 'de';
         $organization = new Organization();
         $organization->setIdentifier($cachedOrganization->getUid());
         /** @var CachedOrganizationName $cachedOrganizationName */
         foreach ($cachedOrganization->getNames() as $cachedOrganizationName) {
-            if ($cachedOrganizationName->getLanguageTag() === Options::getLanguage($options)) {
+            if ($cachedOrganizationName->getLanguageTag() === $lang) {
                 $organization->setName($cachedOrganizationName->getName());
             }
         }
