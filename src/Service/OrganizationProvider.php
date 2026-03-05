@@ -240,7 +240,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
             try {
                 $filter = FilterTreeBuilder::create()
                     ->iContains(CachedOrganizationName::NAME, $searchTerm)
-                    ->equals(CachedOrganizationName::LANGUAGE_TAG, Options::getLanguage($options))
+                    ->equals(CachedOrganizationName::LANGUAGE_TAG, Options::getLanguage($options) ?? self::DEFAULT_LANGUAGE)
                     ->createFilter();
             } catch (FilterException $filterException) {
                 $this->logger->error('failed to build filter for organization search parameter: '.$filterException->getMessage(), [$filterException]);
@@ -433,7 +433,8 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     private static function createOrganizationAndExtraDataFromCachedOrganization(CachedOrganization $cachedOrganization, array $options): OrganizationAndExtraData
     {
-        $lang = Options::getLanguage($options) ?? 'de';
+        $lang = Options::getLanguage($options) ?? self::DEFAULT_LANGUAGE;
+
         $organization = new Organization();
         $organization->setIdentifier($cachedOrganization->getUid());
         /** @var CachedOrganizationName $cachedOrganizationName */

@@ -115,6 +115,14 @@ class OrganizationProviderTest extends ApiTestCase
         ];
     }
 
+    public function testGetOrganizationById()
+    {
+        $org = $this->organizationProvider->getOrganizationById('37');
+        $this->assertSame('37', $org->getIdentifier());
+        $this->assertSame('Technische Universität Graz', $org->getName()); // default language is german
+        $this->assertNull($org->getLocalData());
+    }
+
     public function testGetOrganizationByIdEn()
     {
         $options = [];
@@ -175,6 +183,24 @@ class OrganizationProviderTest extends ApiTestCase
         $this->assertSame('Fakultät', $org->getLocalDataValue(self::TYPE_NAME_ATTRIBUTE_NAME));
     }
 
+    public function testGetOrganizations()
+    {
+        $organizations = $this->organizationProvider->getOrganizations(1, 30);
+        $this->assertCount(3, $organizations);
+        $this->assertCount(1, array_filter($organizations,
+            fn ($org) => $org->getIdentifier() === '37'
+                && $org->getName() === 'Technische Universität Graz' // default language is german
+                && $org->getLocalData() === null));
+        $this->assertCount(1, array_filter($organizations,
+            fn ($org) => $org->getIdentifier() === '22'
+                && $org->getName() === 'Institut für Verfahrenstechnik'
+                && $org->getLocalData() === null));
+        $this->assertCount(1, array_filter($organizations,
+            fn ($org) => $org->getIdentifier() === '21'
+                && $org->getName() === 'Fakultät für Maschinenbau und Wirtschaftswissenschaften'
+                && $org->getLocalData() === null));
+    }
+
     public function testGetOrganizationsEn()
     {
         $options = [];
@@ -217,13 +243,40 @@ class OrganizationProviderTest extends ApiTestCase
 
     public function testGetOrganizationsWithSearchParameter()
     {
+        // default language is german
         $options = [];
-        Options::setLanguage($options, 'en');
-        $options[Organization::SEARCH_PARAMETER_NAME] = 'Graz';
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'fakultät';
         $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(1, $organizations);
-        $this->assertSame('37', $organizations[0]->getIdentifier());
-        $this->assertSame('Graz University of Technology', $organizations[0]->getName());
+        $this->assertSame('21', $organizations[0]->getIdentifier());
+        $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
+
+        $options = [];
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'faculty';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(0, $organizations);
+    }
+
+    public function testGetOrganizationsWithSearchParameterDe()
+    {
+        $options = [];
+        Options::setLanguage($options, 'de');
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'fakultät';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(1, $organizations);
+        $this->assertSame('21', $organizations[0]->getIdentifier());
+        $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
+    }
+
+    public function testGetOrganizationsWithSearchParameterEn()
+    {
+        $options = [];
+        Options::setLanguage($options, 'en');
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'faculty';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(1, $organizations);
+        $this->assertSame('21', $organizations[0]->getIdentifier());
+        $this->assertSame('Faculty of Mechanical Engineering and Economic Sciences', $organizations[0]->getName());
     }
 
     public function testGetOrganizationsPagination()
