@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.1
+
+- Fix org name missing in some cases
+
 ## v0.2.0
 
 - Add more local data source attributes
