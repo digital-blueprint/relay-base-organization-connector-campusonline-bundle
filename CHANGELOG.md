@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.3
+
 - fix parent replacement on cache refresh
 - re-create cache tables according to schema auto-generated from entity metadata
 
