@@ -8,10 +8,6 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\Configuration;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\DbpRelayBaseOrganizationConnectorCampusonlineExtension;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganization;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationName;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationNameStaging;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Entity\CachedOrganizationStaging;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
 use Dbp\Relay\CoreBundle\Rest\Options;
@@ -326,28 +322,13 @@ class OrganizationProviderTest extends ApiTestCase
                 && $org->getLocalDataValue(self::TYPE_ATTRIBUTE_NAME) === '680'));
     }
 
+    /**
+     * @throws \Throwable
+     */
     private function recreateOrganizationCache(): void
     {
         $this->mockResponses();
-        try {
-            // this is expected to fail, since sqlite does not support some operations
-            $this->organizationProvider->recreateOrganizationsCache();
-        } catch (\Throwable) {
-            $organizationsLiveTable = CachedOrganization::TABLE_NAME;
-            $organizationsStagingTable = CachedOrganizationStaging::TABLE_NAME;
-            $organizationsTempTable = 'organizations_old';
-            $organizationNamesLiveTable = CachedOrganizationName::TABLE_NAME;
-            $organizationNamesStagingTable = CachedOrganizationNameStaging::TABLE_NAME;
-            $organizationNamesTempTable = 'organization_names_old';
-            $connection = $this->entityManager->getConnection();
-            $connection->executeStatement("ALTER TABLE $organizationsLiveTable RENAME TO $organizationsTempTable;");
-            $connection->executeStatement("ALTER TABLE $organizationsStagingTable RENAME TO $organizationsLiveTable;");
-            $connection->executeStatement("ALTER TABLE $organizationsTempTable RENAME TO $organizationsStagingTable;");
-            $connection->executeStatement("ALTER TABLE $organizationNamesLiveTable RENAME TO $organizationNamesTempTable;");
-            $connection->executeStatement("ALTER TABLE $organizationNamesStagingTable RENAME TO $organizationNamesLiveTable;");
-            $connection->executeStatement("ALTER TABLE $organizationNamesTempTable RENAME TO $organizationNamesStagingTable;");
-        } finally {
-            $this->organizationProvider->reset(); // ensure new api connection is created on subsequent requests
-        }
+        $this->organizationProvider->recreateOrganizationsCache();
+        $this->organizationProvider->reset(); // ensure new api connection is created on subsequent requests
     }
 }

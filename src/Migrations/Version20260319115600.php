@@ -6,7 +6,7 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 
-final class Version20251218113700 extends EntityManagerMigration
+final class Version20260319115600 extends EntityManagerMigration
 {
     public function getDescription(): string
     {

@@ -29,7 +29,6 @@ use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTools;
 use Dbp\Relay\CoreBundle\Rest\Query\Filter\FilterTreeBuilder;
 use Dbp\Relay\CoreBundle\Rest\Query\Pagination\Pagination;
 use Dbp\Relay\CoreBundle\Rest\Query\Sort\SortTools;
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -106,7 +105,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     /**
      * @throws \Throwable
-     * @throws Exception
      */
     public function recreateOrganizationsCache(): void
     {
@@ -147,8 +145,8 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
                 foreach ($replacementParentsForOrganizationsToDelete as $organizationUid => $parentUid) {
                     // go back in the ancestral line until we find an ancestor that is not to be replaced/deleted (or null)
-                    while ($grandparentUid = $replacementParentsForOrganizationsToDelete[$parentUid] ?? null) {
-                        $parentUid = $grandparentUid;
+                    while ($parentUid !== null && array_key_exists($parentUid, $replacementParentsForOrganizationsToDelete)) {
+                        $parentUid = $replacementParentsForOrganizationsToDelete[$parentUid];
                     }
                     $parentUid ??= 'NULL';
                     $connection->executeStatement(<<<STMT
@@ -170,22 +168,32 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
             $organizationNamesLiveTable = CachedOrganizationName::TABLE_NAME;
             $organizationNamesTempTable = CachedOrganizationName::TABLE_NAME.'_old';
 
-            // swap live and staging tables
-            $connection->executeStatement(<<<STMT
-                RENAME TABLE
-                    $organizationsLiveTable TO $organizationsTempTable,
-                    $organizationsStagingTable TO $organizationsLiveTable,
-                    $organizationsTempTable TO $organizationsStagingTable,
-                    $organizationNamesLiveTable TO $organizationNamesTempTable,
-                    $organizationNamesStagingTable TO $organizationNamesLiveTable,
-                    $organizationNamesTempTable TO $organizationNamesStagingTable
-                STMT);
+            try {
+                // swap live and staging tables - fails for sqlite
+                $connection->executeStatement(<<<STMT
+                    RENAME TABLE
+                        $organizationsLiveTable TO $organizationsTempTable,
+                        $organizationsStagingTable TO $organizationsLiveTable,
+                        $organizationsTempTable TO $organizationsStagingTable,
+                        $organizationNamesLiveTable TO $organizationNamesTempTable,
+                        $organizationNamesStagingTable TO $organizationNamesLiveTable,
+                        $organizationNamesTempTable TO $organizationNamesStagingTable
+                    STMT
+                );
+            } catch (\Throwable) { // sqlite workaround
+                $connection->executeStatement("ALTER TABLE $organizationsLiveTable RENAME TO $organizationsTempTable;");
+                $connection->executeStatement("ALTER TABLE $organizationsStagingTable RENAME TO $organizationsLiveTable;");
+                $connection->executeStatement("ALTER TABLE $organizationsTempTable RENAME TO $organizationsStagingTable;");
+                $connection->executeStatement("ALTER TABLE $organizationNamesLiveTable RENAME TO $organizationNamesTempTable;");
+                $connection->executeStatement("ALTER TABLE $organizationNamesStagingTable RENAME TO $organizationNamesLiveTable;");
+                $connection->executeStatement("ALTER TABLE $organizationNamesTempTable RENAME TO $organizationNamesStagingTable;");
+            }
         } catch (\Throwable $throwable) {
             $this->logger->error('failed to recreate organizations cache: '.$throwable->getMessage(), [$throwable]);
             throw $throwable;
         } finally {
-            $connection->executeStatement("TRUNCATE TABLE $organizationNamesStagingTable");
-            $connection->executeStatement("TRUNCATE TABLE $organizationsStagingTable");
+            $connection->executeStatement("DELETE FROM $organizationNamesStagingTable");
+            $connection->executeStatement("DELETE FROM $organizationsStagingTable");
         }
     }
 

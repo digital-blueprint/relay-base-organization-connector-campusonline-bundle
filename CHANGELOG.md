@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- fix parent replacement on cache refresh
+- re-create cache tables according to schema auto-generated from entity metadata
+
 ## v0.2.2
 
 - Fix org name missing in some cases
