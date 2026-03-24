@@ -28,6 +28,13 @@ final class Version20260319115600 extends EntityManagerMigration
         $uidColumn = CachedOrganization::UID;
         $organizationUidColumn = CachedOrganizationName::ORGANIZATION_UID;
 
+        // first, delete orphan nodes from organization_names to:
+        $this->addSql(<<<STMT
+            DELETE n FROM $organizationNamesTable n
+            LEFT JOIN $organizationsTable o ON o.$uidColumn = n.$organizationUidColumn
+            WHERE o.$uidColumn IS NULL
+            STMT);
+
         $this->addSql(<<<STMT
             ALTER TABLE $organizationNamesTable
             ADD CONSTRAINT FK_organization_names_organizations FOREIGN KEY ($organizationUidColumn) REFERENCES $organizationsTable ($uidColumn) ON DELETE CASCADE

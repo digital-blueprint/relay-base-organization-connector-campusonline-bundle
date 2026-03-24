@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## v0.2.4
+## v0.2.5
 
 - Fix migration: Update tables (add foreign key constraints) instead of re-creating them 
 - Add re-create cache command
