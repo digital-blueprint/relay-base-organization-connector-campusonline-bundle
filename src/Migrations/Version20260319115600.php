@@ -15,6 +15,6 @@ final class Version20260319115600 extends EntityManagerMigration
 
     public function up(Schema $schema): void
     {
-        $this->recreateCacheTables();
+        // nothing to do
     }
 }

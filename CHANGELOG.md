@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- remove failing and unnecessary migration
+
 ## v0.2.3
 
 - fix parent replacement on cache refresh

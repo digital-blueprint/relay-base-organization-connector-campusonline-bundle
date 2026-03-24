@@ -18,25 +18,4 @@ abstract class EntityManagerMigration extends AbstractEntityManagerMigration
     {
         return DbpRelayBaseOrganizationConnectorCampusonlineExtension::ENTITY_MANAGER_ID;
     }
-
-    protected function recreateCacheTables(): void
-    {
-        $organizationsTable = CachedOrganization::TABLE_NAME;
-        $organizationNamesTable = CachedOrganizationName::TABLE_NAME;
-        $organizationsStagingTable = CachedOrganizationStaging::TABLE_NAME;
-        $organizationNamesStagingTable = CachedOrganizationNameStaging::TABLE_NAME;
-
-        $this->addSql("DROP TABLE IF EXISTS $organizationNamesTable");
-        $this->addSql("DROP TABLE IF EXISTS $organizationNamesStagingTable");
-        $this->addSql("DROP TABLE IF EXISTS $organizationsStagingTable");
-        $this->addSql("DROP TABLE IF EXISTS $organizationsTable");
-
-        $entityManager = $this->getEntityManager();
-        $metaData = $entityManager->getMetadataFactory()->getAllMetadata();
-        $schemaTool = new SchemaTool($entityManager);
-
-        foreach ($schemaTool->getCreateSchemaSql($metaData) as $sql) {
-            $this->addSql($sql);
-        }
-    }
 }
