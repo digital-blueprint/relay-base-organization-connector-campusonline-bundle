@@ -29,7 +29,7 @@ class OrganizationProviderTest extends ApiTestCase
     private ?EntityManagerInterface $entityManager = null;
     private ?OrganizationEventSubscriber $organizationEventSubscriber = null;
 
-    private static function createEventSubscriberConfig(bool $publicRest): array
+    private static function createEventSubscriberConfig(): array
     {
         $config = [];
         $config['local_data_mapping'] = [
