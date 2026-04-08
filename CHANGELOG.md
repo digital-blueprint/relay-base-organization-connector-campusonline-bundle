@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add support for multi-term search parameters
+
 ## v0.2.5
 
 - Fix migration: Update tables (add foreign key constraints) instead of re-creating them 

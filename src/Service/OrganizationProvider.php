@@ -246,10 +246,13 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         $filter = null;
         if ($searchTerm = $options[Organization::SEARCH_PARAMETER_NAME] ?? null) {
             try {
-                $filter = FilterTreeBuilder::create()
-                    ->iContains(CachedOrganizationName::NAME, $searchTerm)
-                    ->equals(CachedOrganizationName::LANGUAGE_TAG, Options::getLanguage($options) ?? self::DEFAULT_LANGUAGE)
-                    ->createFilter();
+                $filterTreeBuilder = FilterTreeBuilder::create()
+                    ->equals(CachedOrganizationName::LANGUAGE_TAG,
+                        Options::getLanguage($options) ?? self::DEFAULT_LANGUAGE);
+                foreach (explode(' ', $searchTerm) as $term) {
+                    $filterTreeBuilder->iContains(CachedOrganizationName::NAME, $term);
+                }
+                $filter = $filterTreeBuilder->createFilter();
             } catch (FilterException $filterException) {
                 $this->logger->error('failed to build filter for organization search parameter: '.$filterException->getMessage(), [$filterException]);
                 throw new \RuntimeException('failed to build filter for organization search parameter');

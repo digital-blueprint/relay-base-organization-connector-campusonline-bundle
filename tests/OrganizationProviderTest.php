@@ -253,6 +253,22 @@ class OrganizationProviderTest extends ApiTestCase
         $this->assertCount(0, $organizations);
     }
 
+    public function testGetOrganizationsWithMultitermSearchParameter()
+    {
+        // default language is german
+        $options = [];
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'fak electro';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(0, $organizations);
+
+        $options = [];
+        $options[Organization::SEARCH_PARAMETER_NAME] = 'fak masch';
+        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $this->assertCount(1, $organizations);
+        $this->assertSame('21', $organizations[0]->getIdentifier());
+        $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
+    }
+
     public function testGetOrganizationsWithSearchParameterDe()
     {
         $options = [];
