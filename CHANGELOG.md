@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.7
+
 - rename contacts.officeHours to contacts.secretariatInformation
 
 ## v0.2.6
