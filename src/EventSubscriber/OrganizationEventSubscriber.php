@@ -75,7 +75,7 @@ class OrganizationEventSubscriber extends AbstractLocalDataEventSubscriber
                         'email' => $organizationResource->getContactInfoEmail($contactInfoIndex),
                         'webPage' => $organizationResource->getContactInfoWebPageHref($contactInfoIndex),
                         'phoneNumber' => $organizationResource->getContactInfoTel($contactInfoIndex),
-                        'officeHours' => $organizationResource->getContactInfoSecretariatInformation($contactInfoIndex),
+                        'secretariatInformation' => $organizationResource->getContactInfoSecretariatInformation($contactInfoIndex),
                         'address' => [
                             'street' => $organizationResource->getContactInfoAddressStreet($contactInfoIndex),
                             'postalCode' => $organizationResource->getContactInfoAddressPostalCode($contactInfoIndex),

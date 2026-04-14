@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- rename contacts.officeHours to contacts.secretariatInformation
+
 ## v0.2.6
 
 - Add support for multi-term search parameters
