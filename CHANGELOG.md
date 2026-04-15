@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.8
+
+- rename localData.contacts.webPage to localData.contacts.homepageUrl (for unified naming)
+
 ## v0.2.7
 
 - rename contacts.officeHours to contacts.secretariatInformation

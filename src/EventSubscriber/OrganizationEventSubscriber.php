@@ -10,6 +10,7 @@ use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPost
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Event\OrganizationPreEvent;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationAndExtraData;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
+use Dbp\Relay\CoreBundle\Helpers\Tools;
 use Dbp\Relay\CoreBundle\LocalData\AbstractLocalDataEventSubscriber;
 use Dbp\Relay\CoreBundle\LocalData\LocalDataPostEvent;
 use Dbp\Relay\CoreBundle\Rest\Options;
@@ -73,15 +74,15 @@ class OrganizationEventSubscriber extends AbstractLocalDataEventSubscriber
                     $contacts[] = [
                         'name' => $organizationResource->getContactInfoKey($contactInfoIndex),
                         'email' => $organizationResource->getContactInfoEmail($contactInfoIndex),
-                        'webPage' => $organizationResource->getContactInfoWebPageHref($contactInfoIndex),
+                        'homepageUrl' => $organizationResource->getContactInfoWebPageHref($contactInfoIndex),
                         'phoneNumber' => $organizationResource->getContactInfoTel($contactInfoIndex),
                         'secretariatInformation' => $organizationResource->getContactInfoSecretariatInformation($contactInfoIndex),
-                        'address' => [
-                            'street' => $organizationResource->getContactInfoAddressStreet($contactInfoIndex),
-                            'postalCode' => $organizationResource->getContactInfoAddressPostalCode($contactInfoIndex),
-                            'city' => $organizationResource->getContactInfoAddressCity($contactInfoIndex),
-                            'country' => $organizationResource->getContactInfoAddressCountry($contactInfoIndex),
-                        ],
+                        'address' => Tools::createAddressArray(
+                            $organizationResource->getContactInfoAddressStreet($contactInfoIndex),
+                            $organizationResource->getContactInfoAddressPostalCode($contactInfoIndex),
+                            $organizationResource->getContactInfoAddressCity($contactInfoIndex),
+                            $organizationResource->getContactInfoAddressCountry($contactInfoIndex)
+                        ),
                     ];
                 }
 
