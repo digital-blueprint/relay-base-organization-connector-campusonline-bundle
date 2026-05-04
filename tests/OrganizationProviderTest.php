@@ -6,114 +6,69 @@ namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\Configuration;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\DependencyInjection\DbpRelayBaseOrganizationConnectorCampusonlineExtension;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\EventSubscriber\OrganizationEventSubscriber;
-use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Service\OrganizationProvider;
+use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\TestUtils\TestOrganizationProvider;
 use Dbp\Relay\CoreBundle\Rest\Options;
-use Dbp\Relay\CoreBundle\TestUtils\TestEntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
-use Psr\Log\NullLogger;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class OrganizationProviderTest extends ApiTestCase
 {
-    private const ORGANIZATION_CODE_ATTRIBUTE_NAME = 'code';
-    private const TYPE_ATTRIBUTE_NAME = 'type';
-    private const TYPE_NAME_ATTRIBUTE_NAME = 'typeName';
+    private const ORGANIZATION_CODE_ATTRIBUTE_NAME = TestOrganizationProvider::ORGANIZATION_CODE_ATTRIBUTE_NAME;
+    private const TYPE_ATTRIBUTE_NAME = TestOrganizationProvider::TYPE_ATTRIBUTE_NAME;
+    private const TYPE_NAME_ATTRIBUTE_NAME = TestOrganizationProvider::TYPE_NAME_ATTRIBUTE_NAME;
 
-    private ?OrganizationProvider $organizationProvider = null;
-    private ?EntityManagerInterface $entityManager = null;
-    private ?OrganizationEventSubscriber $organizationEventSubscriber = null;
+    private ?TestOrganizationProvider $testOrganizationProvider = null;
 
-    private static function createEventSubscriberConfig(): array
-    {
-        $config = [];
-        $config['local_data_mapping'] = [
-            [
-                'local_data_attribute' => self::ORGANIZATION_CODE_ATTRIBUTE_NAME,
-                'source_attribute' => OrganizationEventSubscriber::CODE_SOURCE_ATTRIBUTE,
-                'default_value' => '',
-            ],
-            [
-                'local_data_attribute' => self::TYPE_ATTRIBUTE_NAME,
-                'source_attribute' => OrganizationEventSubscriber::TYPE_UID_SOURCE_ATTRIBUTE,
-                'default_value' => '',
-            ],
-            [
-                'local_data_attribute' => self::TYPE_NAME_ATTRIBUTE_NAME,
-                'source_attribute' => OrganizationEventSubscriber::TYPE_NAME_SOURCE_DATA_ATTRIBUTE,
-                'default_value' => '',
-            ],
-        ];
-
-        return $config;
-    }
-
+    /**
+     * @throws \Throwable
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $container = self::bootKernel()->getContainer();
-
-        $eventDispatcher = new EventDispatcher();
-        $this->entityManager = TestEntityManager::setUpEntityManager($container,
-            DbpRelayBaseOrganizationConnectorCampusonlineExtension::ENTITY_MANAGER_ID);
-
-        $this->organizationProvider = new OrganizationProvider($this->entityManager, $eventDispatcher);
-        $this->organizationProvider->setLogger(new NullLogger());
-        $this->organizationProvider->setConfig($this->getPublicRestApiConfig());
-        $this->organizationProvider->reset();
-
-        $this->organizationEventSubscriber = new OrganizationEventSubscriber($this->organizationProvider);
-        $eventDispatcher->addSubscriber($this->organizationEventSubscriber);
-
-        $this->organizationEventSubscriber->setConfig(self::createEventSubscriberConfig(true));
-
-        $this->recreateOrganizationCache();
+        $this->testOrganizationProvider = TestOrganizationProvider::createTestOrganizationProvider(
+            self::bootKernel()->getContainer()
+        );
     }
 
-    private function getPublicRestApiConfig(): array
+    public function testCustomTestOrganizationResources(): void
     {
-        $config = [];
-        $config[Configuration::CAMPUS_ONLINE_NODE] = [
-            'legacy' => false,
-            'base_url' => 'https://campusonline.at/campusonline/ws/public/rest/',
-            'client_id' => 'client',
-            'client_secret' => 'secret',
-        ];
+        $this->testOrganizationProvider = TestOrganizationProvider::createTestOrganizationProvider(
+            self::bootKernel()->getContainer(),
+            testOrganizationResources: [
+                [
+                    'uid' => '123',
+                    'code' => '321',
+                    'groupKey' => 'OE',
+                    'name' => [
+                        'value' => [
+                            'de' => 'Institut für Irgendwas',
+                            'en' => 'Institute of Something',
+                        ],
+                    ],
+                    'parentUid' => '12',
+                    'type' => [
+                        'name' => [
+                            'value' => [
+                                'de' => 'Institut',
+                                'en' => 'Institute',
+                            ],
+                        ],
+                        'uid' => '691',
+                    ],
+                ],
+            ]
+        );
 
-        return $config;
-    }
-
-    private function mockResponses(): void
-    {
-        $responses = [...self::createMockAuthServerResponses(),
-            new Response(
-                200,
-                ['Content-Type' => 'application/json'],
-                file_get_contents(__DIR__.'/public_rest_org_api_response.json')),
-        ];
-
-        $stack = HandlerStack::create(new MockHandler($responses));
-        $this->organizationProvider->setClientHandler($stack);
-    }
-
-    private static function createMockAuthServerResponses(): array
-    {
-        return [
-            new Response(200, ['Content-Type' => 'application/json;charset=utf-8'], '{"authServerUrl": "https://auth-server.net/"}'),
-            new Response(200, ['Content-Type' => 'application/json;charset=utf-8'], '{"token_endpoint": "https://token-endpoint.net/"}'),
-            new Response(200, ['Content-Type' => 'application/json;charset=utf-8'], '{"access_token": "token", "expires_in": 3600, "token_type": "Bearer"}'),
-        ];
+        $options = [];
+        Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME]);
+        $organization = $this->testOrganizationProvider->getOrganizationById('123', $options);
+        $this->assertSame('123', $organization->getIdentifier());
+        $this->assertSame('Institut für Irgendwas', $organization->getName());
+        $this->assertSame('321', $organization->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
     }
 
     public function testGetOrganizationById()
     {
-        $org = $this->organizationProvider->getOrganizationById('37');
+        $org = $this->testOrganizationProvider->getOrganizationById('37');
         $this->assertSame('37', $org->getIdentifier());
         $this->assertSame('Technische Universität Graz', $org->getName()); // default language is german
         $this->assertNull($org->getLocalData());
@@ -123,7 +78,7 @@ class OrganizationProviderTest extends ApiTestCase
     {
         $options = [];
         Options::setLanguage($options, 'en');
-        $org = $this->organizationProvider->getOrganizationById('37', $options);
+        $org = $this->testOrganizationProvider->getOrganizationById('37', $options);
         $this->assertSame('37', $org->getIdentifier());
         $this->assertSame('Graz University of Technology', $org->getName());
         $this->assertNull($org->getLocalData());
@@ -133,7 +88,7 @@ class OrganizationProviderTest extends ApiTestCase
     {
         $options = [];
         Options::setLanguage($options, 'de');
-        $org = $this->organizationProvider->getOrganizationById('37', $options);
+        $org = $this->testOrganizationProvider->getOrganizationById('37', $options);
         $this->assertSame('37', $org->getIdentifier());
         $this->assertSame('Technische Universität Graz', $org->getName());
         $this->assertNull($org->getLocalData());
@@ -144,7 +99,7 @@ class OrganizationProviderTest extends ApiTestCase
         $options = [];
         Options::setLanguage($options, 'en');
         Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME, self::TYPE_ATTRIBUTE_NAME]);
-        $org = $this->organizationProvider->getOrganizationById('21', $options);
+        $org = $this->testOrganizationProvider->getOrganizationById('21', $options);
         $this->assertSame('21', $org->getIdentifier());
         $this->assertSame('Faculty of Mechanical Engineering and Economic Sciences', $org->getName());
         $this->assertSame('3000', $org->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
@@ -153,12 +108,12 @@ class OrganizationProviderTest extends ApiTestCase
 
     public function testGetOrganizationByIdWithLocalDataWithApiRequestEn()
     {
-        $this->mockResponses();
+        $this->testOrganizationProvider->mockApiResponse();
 
         $options = [];
         Options::setLanguage($options, 'en');
         Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME, self::TYPE_NAME_ATTRIBUTE_NAME]);
-        $org = $this->organizationProvider->getOrganizationById('21', $options);
+        $org = $this->testOrganizationProvider->getOrganizationById('21', $options);
         $this->assertSame('21', $org->getIdentifier());
         $this->assertSame('Faculty of Mechanical Engineering and Economic Sciences', $org->getName());
         $this->assertSame('3000', $org->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
@@ -167,12 +122,12 @@ class OrganizationProviderTest extends ApiTestCase
 
     public function testGetOrganizationByIdWithLocalDataWithApiRequestDe()
     {
-        $this->mockResponses();
+        $this->testOrganizationProvider->mockApiResponse();
 
         $options = [];
         Options::setLanguage($options, 'de');
         Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME, self::TYPE_NAME_ATTRIBUTE_NAME]);
-        $org = $this->organizationProvider->getOrganizationById('21', $options);
+        $org = $this->testOrganizationProvider->getOrganizationById('21', $options);
         $this->assertSame('21', $org->getIdentifier());
         $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $org->getName());
         $this->assertSame('3000', $org->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME));
@@ -181,7 +136,7 @@ class OrganizationProviderTest extends ApiTestCase
 
     public function testGetOrganizations()
     {
-        $organizations = $this->organizationProvider->getOrganizations(1, 30);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30);
         $this->assertCount(3, $organizations);
         $this->assertCount(1, array_filter($organizations,
             fn ($org) => $org->getIdentifier() === '37'
@@ -201,7 +156,7 @@ class OrganizationProviderTest extends ApiTestCase
     {
         $options = [];
         Options::setLanguage($options, 'en');
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(3, $organizations);
         $this->assertCount(1, array_filter($organizations,
             fn ($org) => $org->getIdentifier() === '37'
@@ -221,7 +176,7 @@ class OrganizationProviderTest extends ApiTestCase
     {
         $options = [];
         Options::setLanguage($options, 'de');
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(3, $organizations);
         $this->assertCount(1, array_filter($organizations,
             fn ($org) => $org->getIdentifier() === '37'
@@ -242,14 +197,14 @@ class OrganizationProviderTest extends ApiTestCase
         // default language is german
         $options = [];
         $options[Organization::SEARCH_PARAMETER_NAME] = 'fakultät';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(1, $organizations);
         $this->assertSame('21', $organizations[0]->getIdentifier());
         $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
 
         $options = [];
         $options[Organization::SEARCH_PARAMETER_NAME] = 'faculty';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(0, $organizations);
     }
 
@@ -258,12 +213,12 @@ class OrganizationProviderTest extends ApiTestCase
         // default language is german
         $options = [];
         $options[Organization::SEARCH_PARAMETER_NAME] = 'fak electro';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(0, $organizations);
 
         $options = [];
         $options[Organization::SEARCH_PARAMETER_NAME] = 'fak masch';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(1, $organizations);
         $this->assertSame('21', $organizations[0]->getIdentifier());
         $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
@@ -274,7 +229,7 @@ class OrganizationProviderTest extends ApiTestCase
         $options = [];
         Options::setLanguage($options, 'de');
         $options[Organization::SEARCH_PARAMETER_NAME] = 'fakultät';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(1, $organizations);
         $this->assertSame('21', $organizations[0]->getIdentifier());
         $this->assertSame('Fakultät für Maschinenbau und Wirtschaftswissenschaften', $organizations[0]->getName());
@@ -285,7 +240,7 @@ class OrganizationProviderTest extends ApiTestCase
         $options = [];
         Options::setLanguage($options, 'en');
         $options[Organization::SEARCH_PARAMETER_NAME] = 'faculty';
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(1, $organizations);
         $this->assertSame('21', $organizations[0]->getIdentifier());
         $this->assertSame('Faculty of Mechanical Engineering and Economic Sciences', $organizations[0]->getName());
@@ -295,9 +250,9 @@ class OrganizationProviderTest extends ApiTestCase
     {
         $options = [];
         Options::setLanguage($options, 'en');
-        $organizationPage1 = $this->organizationProvider->getOrganizations(1, 2, $options);
+        $organizationPage1 = $this->testOrganizationProvider->getOrganizations(1, 2, $options);
         $this->assertCount(2, $organizationPage1);
-        $organizationPage2 = $this->organizationProvider->getOrganizations(2, 2, $options);
+        $organizationPage2 = $this->testOrganizationProvider->getOrganizations(2, 2, $options);
         $this->assertCount(1, $organizationPage2);
         $organizations = array_merge($organizationPage1, $organizationPage2);
         $this->assertCount(1, array_filter($organizations,
@@ -319,7 +274,7 @@ class OrganizationProviderTest extends ApiTestCase
         $options = [];
         Options::setLanguage($options, 'en');
         Options::requestLocalDataAttributes($options, [self::ORGANIZATION_CODE_ATTRIBUTE_NAME, self::TYPE_ATTRIBUTE_NAME]);
-        $organizations = $this->organizationProvider->getOrganizations(1, 30, $options);
+        $organizations = $this->testOrganizationProvider->getOrganizations(1, 30, $options);
         $this->assertCount(3, $organizations);
         $this->assertCount(1, array_filter($organizations,
             fn ($org) => $org->getIdentifier() === '37'
@@ -336,15 +291,5 @@ class OrganizationProviderTest extends ApiTestCase
                 && $org->getName() === 'Faculty of Mechanical Engineering and Economic Sciences'
                 && $org->getLocalDataValue(self::ORGANIZATION_CODE_ATTRIBUTE_NAME) === '3000'
                 && $org->getLocalDataValue(self::TYPE_ATTRIBUTE_NAME) === '680'));
-    }
-
-    /**
-     * @throws \Throwable
-     */
-    private function recreateOrganizationCache(): void
-    {
-        $this->mockResponses();
-        $this->organizationProvider->recreateOrganizationsCache();
-        $this->organizationProvider->reset(); // ensure new api connection is created on subsequent requests
     }
 }

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- add TestUtils with TestOrganizationProvider for unit testing in other bundles
+
 ## v0.2.8
 
 - rename localData.contacts.webPage to localData.contacts.homepageUrl (for unified naming)
