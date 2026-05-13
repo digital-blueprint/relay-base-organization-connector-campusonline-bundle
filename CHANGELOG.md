@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.9
+
 - add TestUtils with TestOrganizationProvider for unit testing in other bundles
 
 ## v0.2.8
