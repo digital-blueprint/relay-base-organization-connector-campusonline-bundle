@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.10
+
 - remove internal state from Organization to allow recursive organization gets
 
 ## v0.2.9
