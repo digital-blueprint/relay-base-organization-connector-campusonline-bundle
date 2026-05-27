@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- remove internal state from Organization to allow recursive organization gets
+
 ## v0.2.9
 
 - add TestUtils with TestOrganizationProvider for unit testing in other bundles

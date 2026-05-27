@@ -47,8 +47,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     private ?OrganizationApi $organizationApi = null;
     private ?\Closure $isOrganizationCallback = null;
-
-    private LocalDataEventDispatcher $localDataEventDispatcher;
     private array $config = [];
     private ?object $clientHandler = null;
     /** @var string[] */
@@ -60,7 +58,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $eventDispatcher)
     {
-        $this->localDataEventDispatcher = new LocalDataEventDispatcher(Organization::class, $eventDispatcher);
     }
 
     /**
@@ -279,11 +276,28 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         return $this->getOrganizationsFromCache(1, 1000, $filter, $options);
     }
 
+    public function getOrganizationFromApiCached(string $identifier): OrganizationResource
+    {
+        $this->getAndCacheCurrentResultOrganizationsFromApi();
+
+        if (null === ($organizationResource = $this->organizationResourcesRequestCache[$identifier] ?? null)) {
+            try {
+                $organizationResource = $this->getOrganizationApi()->getOrganizationByIdentifier($identifier, [
+                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true']);
+                $this->organizationResourcesRequestCache[$identifier] = $organizationResource;
+            } catch (ApiException $apiException) {
+                self::dispatchException($apiException, $identifier);
+            }
+        }
+
+        return $organizationResource;
+    }
+
     /**
      * Gets all organizations of the current result set from the API and caches them locally, so that not every organization
      * has to be requested individually on setting local data attributes.
      */
-    public function getAndCacheCurrentResultOrganizationsFromApi(): void
+    private function getAndCacheCurrentResultOrganizationsFromApi(): void
     {
         try {
             $currentOrganizationOffset = 0;
@@ -309,21 +323,6 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         } finally {
             $this->currentResultOrganizationUids = [];
         }
-    }
-
-    public function getOrganizationFromApiCached(string $identifier): OrganizationResource
-    {
-        if (null === ($organizationResource = $this->organizationResourcesRequestCache[$identifier] ?? null)) {
-            try {
-                $organizationResource = $this->getOrganizationApi()->getOrganizationByIdentifier($identifier, [
-                    OrganizationApi::INCLUDE_CONTACT_INFO_QUERY_PARAMETER => 'true']);
-                $this->organizationResourcesRequestCache[$identifier] = $organizationResource;
-            } catch (ApiException $apiException) {
-                self::dispatchException($apiException, $identifier);
-            }
-        }
-
-        return $organizationResource;
     }
 
     private function getOrganizationApi(): OrganizationApi
@@ -425,19 +424,20 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
 
     private function postProcessOrganization(OrganizationAndExtraData $organizationAndExtraData, array $options): Organization
     {
+        $localDataEventDispatcher = new LocalDataEventDispatcher(Organization::class, $this->eventDispatcher);
+        $localDataEventDispatcher->onNewOperation($options);
+
         $postEvent = new OrganizationPostEvent(
             $organizationAndExtraData->getOrganization(), $organizationAndExtraData->getExtraData(), $options);
-        $this->localDataEventDispatcher->dispatch($postEvent);
+        $localDataEventDispatcher->dispatch($postEvent);
 
         return $organizationAndExtraData->getOrganization();
     }
 
     private function handleNewRequest(array $options): array
     {
-        $this->localDataEventDispatcher->onNewOperation($options);
-
         $preEvent = new OrganizationPreEvent($options);
-        $this->localDataEventDispatcher->dispatch($preEvent);
+        $this->eventDispatcher->dispatch($preEvent);
 
         return $preEvent->getOptions();
     }
