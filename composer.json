@@ -6,7 +6,7 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
-        "dbp/campusonline-api": "^0.3.33",
+        "dbp/campusonline-api": "^0.3.45",
         "dbp/relay-base-organization-bundle": "^0.2.11",
         "dbp/relay-core-bundle": "^0.1.231",
         "doctrine/collections": "^2.6",
