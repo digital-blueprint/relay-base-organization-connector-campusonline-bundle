@@ -32,10 +32,13 @@ use Dbp\Relay\CoreBundle\Rest\Query\Sort\SortTools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\NamespacedPoolInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class OrganizationProvider implements OrganizationProviderInterface, LoggerAwareInterface
 {
@@ -49,6 +52,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private ?\Closure $isOrganizationCallback = null;
     private array $config = [];
     private ?object $clientHandler = null;
+    private ?CacheItemPoolInterface $campusonlineApiCacheItemPool = null;
     /** @var string[] */
     private array $currentResultOrganizationUids = [];
     /** @var OrganizationResource[] */
@@ -71,6 +75,17 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     public function setConfig(array $config): void
     {
         $this->config = $config[Configuration::CAMPUS_ONLINE_NODE];
+    }
+
+    #[Required]
+    public function setCampusonlineApiCacheItemPool(?CacheItemPoolInterface $coCacheItemPool): void
+    {
+        if ($coCacheItemPool instanceof NamespacedPoolInterface) {
+            $coCacheItemPool = $coCacheItemPool->withSubNamespace(Connection::CACHE_SUBNAMESPACE);
+        }
+
+        $this->campusonlineApiCacheItemPool = $coCacheItemPool;
+        $this->organizationApi?->getConnection()->setCache($coCacheItemPool);
     }
 
     /**
@@ -328,13 +343,14 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
     private function getOrganizationApi(): OrganizationApi
     {
         if ($this->organizationApi === null) {
-            $this->organizationApi = new OrganizationApi(
-                new Connection(
-                    $this->config['base_url'],
-                    $this->config['client_id'],
-                    $this->config['client_secret']
-                )
+            $connection = new Connection(
+                $this->config['base_url'],
+                $this->config['client_id'],
+                $this->config['client_secret']
             );
+            $connection->setCache($this->campusonlineApiCacheItemPool);
+
+            $this->organizationApi = new OrganizationApi($connection);
             $this->organizationApi->setLogger($this->logger);
             $this->organizationApi->setClientHandler($this->clientHandler);
         }

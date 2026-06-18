@@ -6,7 +6,7 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
-        "dbp/campusonline-api": "^0.3.33",
+        "dbp/campusonline-api": "^0.3.45",
         "dbp/relay-base-organization-bundle": "^0.2.11",
         "dbp/relay-core-bundle": "^0.1.231",
         "doctrine/collections": "^2.6",
@@ -17,6 +17,8 @@
         "guzzlehttp/guzzle": "^7.10",
         "guzzlehttp/psr7": "^2.9",
         "psr/log": "^1.1.4 || ^2.0.0 || ^3.0.0",
+        "symfony/cache": "^7.4",
+        "symfony/cache-contracts": "^3.7",
         "symfony/config": "^6.4 || ^7.4",
         "symfony/console": "^7.4",
         "symfony/dependency-injection": "^6.4 || ^7.4",
@@ -24,10 +26,12 @@
         "symfony/event-dispatcher-contracts": "^2.5 || ^3.4",
         "symfony/framework-bundle": "^6.4 || ^7.4",
         "symfony/http-foundation": "^6.4 || ^7.4",
-        "symfony/http-kernel": "^6.4 || ^7.4"
+        "symfony/http-kernel": "^6.4 || ^7.4",
+        "symfony/service-contracts": "^3.7"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.50",
+        "maglnet/composer-require-checker": "^4.18",
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",
         "phpstan/phpstan-symfony": "^2.0",
@@ -43,7 +47,7 @@
         "symfony/web-link": "<6.4.7",
         "doctrine/doctrine-bundle": "<2.13.1"
     },
-    "autoload": { 
+    "autoload": {
         "psr-4": {
             "Dbp\\Relay\\BaseOrganizationConnectorCampusonlineBundle\\": "src/"
         }
@@ -73,6 +77,9 @@
         "lint": [
             "@composer run cs",
             "@composer run phpstan"
+        ],
+        "require-checker": [
+            "@php vendor/bin/composer-require-checker check"
         ],
         "cs-fix": [
             "@php vendor/bin/php-cs-fixer --ansi fix"

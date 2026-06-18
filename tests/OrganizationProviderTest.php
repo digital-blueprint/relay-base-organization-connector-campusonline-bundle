@@ -8,6 +8,7 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\TestUtils\TestOrganizationProvider;
 use Dbp\Relay\CoreBundle\Rest\Options;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 class OrganizationProviderTest extends ApiTestCase
 {
@@ -27,6 +28,26 @@ class OrganizationProviderTest extends ApiTestCase
         $this->testOrganizationProvider = TestOrganizationProvider::createTestOrganizationProvider(
             self::bootKernel()->getContainer()
         );
+    }
+
+    public function testCampusonlineApiTokenCacheIsReused(): void
+    {
+        $cachePool = new ArrayAdapter();
+
+        TestOrganizationProvider::createTestOrganizationProvider(
+            self::bootKernel()->getContainer(),
+            campusonlineApiCacheItemPool: $cachePool
+        );
+
+        $organizationProvider = TestOrganizationProvider::createTestOrganizationProvider(
+            self::bootKernel()->getContainer(),
+            campusonlineApiCacheItemPool: $cachePool,
+            mockAuthServerResponses: false
+        );
+
+        $organization = $organizationProvider->getOrganizationById('37');
+
+        $this->assertSame('37', $organization->getIdentifier());
     }
 
     public function testCustomTestOrganizationResources(): void

@@ -12,6 +12,7 @@ use Dbp\Relay\CoreBundle\TestUtils\TestEntityManager;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -54,7 +55,9 @@ class TestOrganizationProvider extends OrganizationProvider
         ContainerInterface $container,
         array $organizationEventSubscribers = [],
         ?array $localDataMappingConfig = null,
-        ?array $testOrganizationResources = null
+        ?array $testOrganizationResources = null,
+        ?CacheItemPoolInterface $campusonlineApiCacheItemPool = null,
+        bool $mockAuthServerResponses = true
     ): self {
         $config = self::CONFIG;
         if ($localDataMappingConfig !== null) {
@@ -74,6 +77,7 @@ class TestOrganizationProvider extends OrganizationProvider
 
         $organizationProvider->setLogger(new NullLogger());
         $organizationProvider->setConfig($config);
+        $organizationProvider->setCampusonlineApiCacheItemPool($campusonlineApiCacheItemPool);
 
         $organizationEventSubscriber = new OrganizationEventSubscriber($organizationProvider);
         $organizationEventSubscriber->setConfig($config);
@@ -82,7 +86,7 @@ class TestOrganizationProvider extends OrganizationProvider
             $eventDispatcher->addSubscriber($subscriber);
         }
 
-        $organizationProvider->mockApiResponse($testOrganizationResources);
+        $organizationProvider->mockApiResponse($testOrganizationResources, $mockAuthServerResponses);
         $organizationProvider->recreateOrganizationsCache();
         $organizationProvider->reset(); // ensure new api connection is created on subsequent requests
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3dac3e1cab7fb1bb2587bca5261c8f76",
+    "content-hash": "e9c7e1310effa4137c247912ee45c4ad",
     "packages": [
         {
             "name": "api-platform/documentation",
@@ -984,16 +984,16 @@
         },
         {
             "name": "dbp/campusonline-api",
-            "version": "v0.3.44",
+            "version": "v0.3.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/campusonline-api.git",
-                "reference": "91555cdbb776027f775c30f032c29711a526e536"
+                "reference": "eae021b31e5b9a16075366033cd70fec08fc8edd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/91555cdbb776027f775c30f032c29711a526e536",
-                "reference": "91555cdbb776027f775c30f032c29711a526e536",
+                "url": "https://api.github.com/repos/digital-blueprint/campusonline-api/zipball/eae021b31e5b9a16075366033cd70fec08fc8edd",
+                "reference": "eae021b31e5b9a16075366033cd70fec08fc8edd",
                 "shasum": ""
             },
             "require": {
@@ -1028,9 +1028,9 @@
             ],
             "support": {
                 "issues": "https://github.com/digital-blueprint/campusonline-api/issues",
-                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.44"
+                "source": "https://github.com/digital-blueprint/campusonline-api/tree/v0.3.45"
             },
-            "time": "2026-06-10T07:21:55+00:00"
+            "time": "2026-06-15T07:54:28+00:00"
         },
         {
             "name": "dbp/relay-base-organization-bundle",
@@ -2383,22 +2383,22 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.11.1",
+            "version": "7.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "5af96f374e0ab4ebd747b8310888c99d3adb0a8c"
+                "reference": "eaa81598031cf57a9e36258c8546defffc994cba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/5af96f374e0ab4ebd747b8310888c99d3adb0a8c",
-                "reference": "5af96f374e0ab4ebd747b8310888c99d3adb0a8c",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/eaa81598031cf57a9e36258c8546defffc994cba",
+                "reference": "eaa81598031cf57a9e36258c8546defffc994cba",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/promises": "^2.5",
-                "guzzlehttp/psr7": "^2.11",
+                "guzzlehttp/psr7": "^2.12",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
                 "symfony/deprecation-contracts": "^2.5 || ^3.0",
@@ -2491,7 +2491,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.11.1"
+                "source": "https://github.com/guzzle/guzzle/tree/7.12.0"
             },
             "funding": [
                 {
@@ -2507,7 +2507,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-07T22:54:06+00:00"
+            "time": "2026-06-16T22:11:48+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -2595,16 +2595,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.11.0",
+            "version": "2.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "bbb5e61349fa5cb822b3e87842b951088b76b81f"
+                "reference": "9b38012e7b54f594707e6db52c684dc0a74b3a43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/bbb5e61349fa5cb822b3e87842b951088b76b81f",
-                "reference": "bbb5e61349fa5cb822b3e87842b951088b76b81f",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/9b38012e7b54f594707e6db52c684dc0a74b3a43",
+                "reference": "9b38012e7b54f594707e6db52c684dc0a74b3a43",
                 "shasum": ""
             },
             "require": {
@@ -2694,7 +2694,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.11.0"
+                "source": "https://github.com/guzzle/psr7/tree/2.12.0"
             },
             "funding": [
                 {
@@ -2710,7 +2710,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-02T12:30:48+00:00"
+            "time": "2026-06-16T21:50:11+00:00"
         },
         {
             "name": "kekos/multipart-form-data-parser",
@@ -8936,6 +8936,85 @@
     ],
     "packages-dev": [
         {
+            "name": "azjezz/psl",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-standard-library/php-standard-library.git",
+                "reference": "78078f2c505473d2a28319ffe426b2a82ac76790"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-standard-library/php-standard-library/zipball/78078f2c505473d2a28319ffe426b2a82ac76790",
+                "reference": "78078f2c505473d2a28319ffe426b2a82ac76790",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-intl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-sodium": "*",
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
+                "revolt/event-loop": "^1.0.6"
+            },
+            "require-dev": {
+                "carthage-software/mago": "~0.13.1",
+                "php-coveralls/php-coveralls": "^2.7.0",
+                "php-standard-library/psalm-plugin": "^2.3.0",
+                "phpbench/phpbench": "^1.2.15",
+                "phpunit/phpunit": "^9.6.18",
+                "roave/infection-static-analysis-plugin": "^1.36.0",
+                "vimeo/psalm": "^6.0.0"
+            },
+            "suggest": {
+                "php-standard-library/phpstan-extension": "PHPStan integration",
+                "php-standard-library/psalm-plugin": "Psalm integration"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/hhvm/hsl",
+                    "name": "hhvm/hsl"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/bootstrap.php"
+                ],
+                "psr-4": {
+                    "Psl\\": "src/Psl"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "azjezz",
+                    "email": "azjezz@protonmail.com"
+                }
+            ],
+            "description": "PHP Standard Library",
+            "support": {
+                "issues": "https://github.com/php-standard-library/php-standard-library/issues",
+                "source": "https://github.com/php-standard-library/php-standard-library/tree/3.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/azjezz",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/veewee",
+                    "type": "github"
+                }
+            ],
+            "abandoned": "php-standard-library/php-standard-library",
+            "time": "2025-03-03T00:07:00+00:00"
+        },
+        {
             "name": "clue/ndjson-react",
             "version": "v1.3.0",
             "source": {
@@ -9499,6 +9578,89 @@
                 }
             ],
             "time": "2026-06-13T17:51:53+00:00"
+        },
+        {
+            "name": "maglnet/composer-require-checker",
+            "version": "4.18.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maglnet/ComposerRequireChecker.git",
+                "reference": "de930e82bb61e0161d909696950692523b8eaa3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maglnet/ComposerRequireChecker/zipball/de930e82bb61e0161d909696950692523b8eaa3f",
+                "reference": "de930e82bb61e0161d909696950692523b8eaa3f",
+                "shasum": ""
+            },
+            "require": {
+                "azjezz/psl": "^3.2.0",
+                "composer-runtime-api": "^2.0.0",
+                "ext-phar": "*",
+                "nikic/php-parser": "^5.4.0",
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+                "symfony/console": "^7.2.1",
+                "webmozart/glob": "^4.7.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^14.0.0",
+                "ext-zend-opcache": "*",
+                "phing/phing": "^3.0.1",
+                "php-standard-library/phpstan-extension": "^2.0",
+                "php-standard-library/psalm-plugin": "^2.3",
+                "phpstan/phpstan": "^2.1.19",
+                "phpunit/phpunit": "^11.5.27",
+                "psalm/plugin-phpunit": "^0.19.5",
+                "roave/infection-static-analysis-plugin": "^1.38.0",
+                "spatie/temporary-directory": "^2.3.0",
+                "vimeo/psalm": "^6.13.0"
+            },
+            "bin": [
+                "bin/composer-require-checker"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ComposerRequireChecker\\": "src/ComposerRequireChecker"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com",
+                    "homepage": "http://ocramius.github.io/"
+                },
+                {
+                    "name": "Matthias Glaub",
+                    "email": "magl@magl.net",
+                    "homepage": "http://magl.net"
+                }
+            ],
+            "description": "CLI tool to analyze composer dependencies and verify that no unknown symbols are used in the sources of a package",
+            "homepage": "https://github.com/maglnet/ComposerRequireChecker",
+            "keywords": [
+                "cli",
+                "composer",
+                "dependency",
+                "imports",
+                "require",
+                "requirements",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/maglnet/ComposerRequireChecker/issues",
+                "source": "https://github.com/maglnet/ComposerRequireChecker/tree/4.18.0"
+            },
+            "time": "2025-10-30T11:58:39+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -10979,6 +11141,78 @@
                 }
             ],
             "time": "2024-06-11T12:45:25+00:00"
+        },
+        {
+            "name": "revolt/event-loop",
+            "version": "v1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/revoltphp/event-loop.git",
+                "reference": "44061cf513e53c6200372fc935ac42271566295d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/revoltphp/event-loop/zipball/44061cf513e53c6200372fc935ac42271566295d",
+                "reference": "44061cf513e53c6200372fc935ac42271566295d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "jetbrains/phpstorm-stubs": "^2019.3",
+                "phpunit/phpunit": "^9",
+                "psalm/phar": "6.16.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Revolt\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aaron Piotrowski",
+                    "email": "aaron@trowski.com"
+                },
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "ceesjank@gmail.com"
+                },
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@clue.engineering"
+                },
+                {
+                    "name": "Niklas Keller",
+                    "email": "me@kelunik.com"
+                }
+            ],
+            "description": "Rock-solid event loop for concurrent PHP applications.",
+            "keywords": [
+                "async",
+                "asynchronous",
+                "concurrency",
+                "event",
+                "event-loop",
+                "non-blocking",
+                "scheduler"
+            ],
+            "support": {
+                "issues": "https://github.com/revoltphp/event-loop/issues",
+                "source": "https://github.com/revoltphp/event-loop/tree/v1.0.9"
+            },
+            "time": "2026-05-16T17:55:38+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -12633,6 +12867,55 @@
                 }
             ],
             "time": "2025-11-17T20:03:58+00:00"
+        },
+        {
+            "name": "webmozart/glob",
+            "version": "4.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozarts/glob.git",
+                "reference": "8a2842112d6916e61e0e15e316465b611f3abc17"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozarts/glob/zipball/8a2842112d6916e61e0e15e316465b611f3abc17",
+                "reference": "8a2842112d6916e61e0e15e316465b611f3abc17",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3 || ^8.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "symfony/filesystem": "^5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Glob\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "A PHP implementation of Ant's glob.",
+            "support": {
+                "issues": "https://github.com/webmozarts/glob/issues",
+                "source": "https://github.com/webmozarts/glob/tree/4.7.0"
+            },
+            "time": "2024-03-07T20:33:40+00:00"
         }
     ],
     "aliases": [],
