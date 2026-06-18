@@ -85,6 +85,7 @@ class OrganizationProvider implements OrganizationProviderInterface, LoggerAware
         }
 
         $this->campusonlineApiCacheItemPool = $coCacheItemPool;
+        $this->organizationApi?->getConnection()->setCache($coCacheItemPool);
     }
 
     /**
