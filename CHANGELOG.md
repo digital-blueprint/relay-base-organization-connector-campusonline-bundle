@@ -2,7 +2,13 @@
 
 ## Unreleased
 
+## v0.2.13
+
 - Add support for guzzle 8 and guzzle psr7 3
+
+## v0.2.12
+
+- Use CAMPUSonline API token cache
 
 ## v0.2.11
 
