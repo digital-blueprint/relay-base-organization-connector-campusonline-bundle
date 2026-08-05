@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add support for guzzle 8 and guzzle psr7 3
+
 ## v0.2.11
 
 - remove internal state from Organization to allow recursive organization gets
