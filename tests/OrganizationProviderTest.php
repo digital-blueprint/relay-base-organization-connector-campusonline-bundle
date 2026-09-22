@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\Tests;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BaseOrganizationBundle\Entity\Organization;
 use Dbp\Relay\BaseOrganizationConnectorCampusonlineBundle\TestUtils\TestOrganizationProvider;
 use Dbp\Relay\CoreBundle\Rest\Options;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-class OrganizationProviderTest extends ApiTestCase
+class OrganizationProviderTest extends KernelTestCase
 {
     private const ORGANIZATION_CODE_ATTRIBUTE_NAME = TestOrganizationProvider::ORGANIZATION_CODE_ATTRIBUTE_NAME;
     private const TYPE_ATTRIBUTE_NAME = TestOrganizationProvider::TYPE_ATTRIBUTE_NAME;
